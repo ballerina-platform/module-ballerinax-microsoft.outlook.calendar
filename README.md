@@ -21,7 +21,7 @@ or [Oracle JDK](https://www.oracle.com/java/technologies/javase-jdk11-downloads.
  
        > **Note:** Set the JAVA_HOME environment variable to the path name of the directory into which you installed JDK.
 
-2. Download and install [Ballerina Beta2](https://ballerina.io/). 
+2. Download and install [Ballerina Beta3](https://ballerina.io/). 
 
 ### Building the source
 Execute the commands below to build from the source.
