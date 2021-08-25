@@ -258,10 +258,10 @@ public isolated client class Client {
     # + return - Generated stream of `Calendar` or else `error`.
     @display {label: "List Calendars"}
     remote isolated function listCalendars(@display {label: "Optional Query Parameters"} string? queryParams = ()) 
-                                            returns stream<Calendar, error>|error {
+                                            returns stream<Calendar, error?>|error {
         string path = check createUrl([LOGGED_IN_USER, CALENDARS], queryParams);
         CalendarStream objectInstance = check new (self.config, self.httpClient, path, queryParams);
-        stream<Calendar, error> finalStream = new (objectInstance);
+        stream<Calendar, error?> finalStream = new (objectInstance);
         return finalStream;
     }
 }

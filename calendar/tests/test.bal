@@ -401,8 +401,8 @@ function testUpdateCalendar() {
 }
 function testListCalendars() {
     log:printInfo("client->testListCalendars()"); 
-    stream<Calendar, error>|error eventStream = calendarClient->listCalendars(queryParams = queryParamTop);
-    if (eventStream is stream<Calendar, error>) {
+    stream<Calendar, error?>|error eventStream = calendarClient->listCalendars(queryParams = queryParamTop);
+    if (eventStream is stream<Calendar, error?>) {
         error? e = eventStream.forEach(isolated function (Calendar calendar) {
             test:assertNotEquals(calendar.id.toString(), EMPTY_STRING, "Empty Calender ID.");
             log:printInfo(calendar.id.toString());
