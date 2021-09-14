@@ -22,12 +22,12 @@ class EventStream {
     private string? timeZone;
     private string? contentType;
     private string? queryParam;
-    Configuration config;
+    ConnectionConfig config;
     private int index = 0;
     private final http:Client httpClient;
     private final string path;
 
-    isolated function init(Configuration config, http:Client httpClient, string path, TimeZone? timeZone = (), 
+    isolated function init(ConnectionConfig config, http:Client httpClient, string path, TimeZone? timeZone = (), 
                                     ContentType? contentType = (), string? queryParam = ()) returns error? {
         self.config = config;
         self.httpClient = httpClient;
@@ -63,10 +63,7 @@ class EventStream {
     }
 
     isolated function fetchRecordsNext() returns Event[]|error {
-        http:Client nextPageClient = check new (self.nextLink, {
-            auth: self.config.clientConfig,
-            secureSocket: self.config?.secureSocketConfig
-        });
+        http:Client nextPageClient = check new (self.nextLink, self.config);
         http:Response response 
             = check nextPageClient->get(EMPTY_STRING, preparePreferenceHeaderString(self.timeZone, self.contentType));
         return check self.getAndConvertToEventArray(response);
@@ -101,9 +98,9 @@ class CalendarStream {
     private final http:Client httpClient;
     private final string path;
     private string? queryParam;
-    Configuration config;
+    ConnectionConfig config;
 
-    isolated function init(Configuration config, http:Client httpClient, string path, string? queryParam = ()) 
+    isolated function init(ConnectionConfig config, http:Client httpClient, string path, string? queryParam = ()) 
     returns error? {
         self.httpClient = httpClient;
         self.path = path;
@@ -136,10 +133,7 @@ class CalendarStream {
     }
 
     isolated function fetchRecordsNext() returns Calendar[]|error {
-        http:Client nextPageClient = check new (self.nextLink, {
-            auth: self.config.clientConfig,
-            secureSocket: self.config?.secureSocketConfig
-        });
+        http:Client nextPageClient = check new (self.nextLink, self.config);
         http:Response response = check nextPageClient->get(EMPTY_STRING);
         return check self.getAndConvertToCalendarArray(response);
     }
