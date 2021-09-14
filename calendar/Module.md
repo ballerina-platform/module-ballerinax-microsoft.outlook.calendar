@@ -22,8 +22,8 @@ import ballerinax/microsoft.outlook.calendar;
 You can now make the connection configuration using the OAuth2 refresh token grant config.
 
 ```ballerina
-calendar:Configuration configuration = {
-    clientConfig: {
+calendar:ConnectionConfig configuration = {
+    auth: {
         refreshUrl: <REFRESH_URL>,
         refreshToken : <REFRESH_TOKEN>,
         clientId : <CLIENT_ID>,

@@ -3,7 +3,7 @@ org= "ballerinax"
 name= "microsoft.outlook.calendar"
 version= "1.0.1-SNAPSHOT"
 authors = ["Ballerina"]
-keywords = ["microsoft", "outlook", "calendar", "management", "scheduling"]
+keywords = ["productivity/calendars", "cost/free", "vendor/microsoft"]
 repository = "https://github.com/ballerina-platform/module-ballerinax-microsoft.outlook.calendar"
 license = ["Apache-2.0"]
 

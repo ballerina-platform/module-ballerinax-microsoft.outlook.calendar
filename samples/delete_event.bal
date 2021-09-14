@@ -22,8 +22,8 @@ configurable string clientSecret = ?;
 configurable string refreshToken = ?;
 configurable string refreshUrl = ?;
 
-calendar:Configuration configuration = {
-    authConfig: {
+calendar:ConnectionConfig configuration = {
+    auth: {
         clientId: clientId,
         clientSecret: clientSecret,
         refreshToken: refreshToken,

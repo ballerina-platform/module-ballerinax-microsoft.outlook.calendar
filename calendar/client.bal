@@ -23,12 +23,12 @@ import ballerina/log;
 #
 # + httpClient - the HTTP Client
 @display {
-    label: "Microsoft Calendar Client",
-    iconPath: "logo.svg"
+    label: "Microsoft Calendar",
+    iconPath: "microsoft.outlook.calendar.svg"
 }
 public isolated client class Client {
     private final http:Client httpClient;
-    final readonly & Configuration config;
+    final readonly & ConnectionConfig config;
 
     # Initializes the connector. 
     # During initialization you can pass either http:BearerTokenConfig
@@ -38,14 +38,9 @@ public isolated client class Client {
     #
     # + config - Configuration for the connector
     # + return - `http:Error` in case of failure to initialize or `null` if successfully initialized 
-    public isolated function init(Configuration config) returns error? {
+    public isolated function init(ConnectionConfig config) returns error? {
         self.config = config.cloneReadOnly();
-        http:BearerTokenConfig|http:OAuth2RefreshTokenGrantConfig clientConfig = config.clientConfig;
-        http:ClientSecureSocket? socketConfig = config?.secureSocketConfig;
-        self.httpClient = check new (BASE_URL, {
-            auth: clientConfig,
-            secureSocket: socketConfig
-        });
+        self.httpClient = check new (BASE_URL, config);
     }
 
     # #############################################################################
