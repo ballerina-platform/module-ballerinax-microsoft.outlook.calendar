@@ -24,7 +24,7 @@ import ballerina/log;
 # + httpClient - the HTTP Client
 @display {
     label: "Microsoft Calendar",
-    iconPath: "microsoft.outlook.calendar.svg"
+    iconPath: "resources/microsoft.outlook.calendar.svg"
 }
 public isolated client class Client {
     private final http:Client httpClient;
