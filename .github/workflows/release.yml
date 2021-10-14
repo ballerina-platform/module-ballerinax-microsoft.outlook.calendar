@@ -15,7 +15,7 @@ jobs:
               uses: ballerina-platform/ballerina-action@slbeta3
               with:
                   args:
-                      build -c ./calendar
+                      build -c --skip-tests ./calendar
               env:
                   REFRESH_URL: ${{ secrets.REFRESH_URL }}
                   REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
