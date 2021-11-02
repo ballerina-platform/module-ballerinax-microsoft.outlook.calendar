@@ -22,7 +22,16 @@ jobs:
               uses: ballerina-platform/ballerina-action/@nightly
               with:
                   args:
-                      build -c ./calendar
+                      pack ./calendar
+              env:
+                JAVA_HOME: /usr/lib/jvm/default-jvm
+            
+            # Test the ballerina project
+            - name: Ballerina Test
+              uses: ballerina-platform/ballerina-action/@nightly
+              with:
+                  args:
+                      test ./calendar
               env:
                 JAVA_HOME: /usr/lib/jvm/default-jvm
                 REFRESH_URL: ${{ secrets.REFRESH_URL }}

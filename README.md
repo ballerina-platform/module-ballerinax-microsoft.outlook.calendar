@@ -28,11 +28,11 @@ Execute the commands below to build from the source.
 
 1. To build the package:
     ```    
-    bal build -c ./calendar
+    bal pack ./calendar
     ```
-2. To run the without tests:
+2. To run the tests after build:
     ```
-    bal build -c --skip-tests ./calendar
+    bal test ./calendar
     ```
 ## Contributing to Ballerina
 As an open source project, Ballerina welcomes contributions from the community. 
