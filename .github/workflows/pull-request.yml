@@ -13,7 +13,12 @@ jobs:
         uses: ballerina-platform/ballerina-action/@nightly
         with:
           args:
-            build -c ./calendar
+            pack ./calendar
+      - name: Ballerina Test
+        uses: ballerina-platform/ballerina-action/@nightly
+        with:
+          args:
+            test ./calendar
         env: 
           REFRESH_URL: ${{ secrets.REFRESH_URL }}
           REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
