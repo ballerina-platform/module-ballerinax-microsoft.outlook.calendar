@@ -25,4 +25,4 @@ hs_err_pid*
 .gradle
 
 # Ignore build
-*/build/
+**/build/
