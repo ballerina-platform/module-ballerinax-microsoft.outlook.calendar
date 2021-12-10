@@ -101,19 +101,20 @@ function testGetEventWithQueryParameters() {
     io:println("\n\n");
 }
 
-# Test - Get list of `Events` 
+# Test - Get list of `Events`
+# + return - error or null on failure.
 @test:Config {
     enable: true,
     groups: ["events"]
 }
-function testListEvents() {
+function testListEvents() returns error? {
     log:printInfo("client->testListEvents()"); 
     stream<Event, error?>|error eventStream 
         = calendarClient->listEvents(timeZone=TIMEZONE_AD, contentType=CONTENT_TYPE_TEXT, queryParams = queryParamTop);
     if (eventStream is stream<Event, error?>) {
-        error? e = eventStream.forEach(isolated function (Event event) {
+        _ = check eventStream.forEach(isolated function (Event event) {
             test:assertNotEquals(event.id, EMPTY_STRING, "Empty Event ID");
-           log:printInfo(event.id.toString());
+            log:printInfo(event.id.toString());
         }); 
     } else {
         test:assertFail(msg = eventStream.message());
@@ -392,18 +393,19 @@ function testUpdateCalendar() {
     io:println("\n\n");
 }
 
-# Test - List `Calendars`  
+# Test - List `Calendars` 
+# + return - error or null on failure. 
 @test:Config {
     enable: true,
     groups: ["calendars"],
     before: testCreateCalendar,
     after: testDeleteCalendar
 }
-function testListCalendars() {
+function testListCalendars() returns error? {
     log:printInfo("client->testListCalendars()"); 
     stream<Calendar, error?>|error eventStream = calendarClient->listCalendars(queryParams = queryParamTop);
     if (eventStream is stream<Calendar, error?>) {
-        error? e = eventStream.forEach(isolated function (Calendar calendar) {
+        _ = check eventStream.forEach(isolated function (Calendar calendar) {
             test:assertNotEquals(calendar.id.toString(), EMPTY_STRING, "Empty Calender ID.");
             log:printInfo(calendar.id.toString());
         });

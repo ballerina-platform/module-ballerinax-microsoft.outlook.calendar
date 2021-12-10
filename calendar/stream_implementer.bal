@@ -53,6 +53,7 @@ class EventStream {
             self.index += 1;
             return singleRecord;
         }
+        return;
     }
 
     isolated function fetchRecordsInitial() returns Event[]|error {
@@ -124,6 +125,7 @@ class CalendarStream {
             self.index += 1;
             return singleRecord;
         }
+        return;
     }
 
     isolated function fetchRecordsInitial() returns Calendar[]|error {
