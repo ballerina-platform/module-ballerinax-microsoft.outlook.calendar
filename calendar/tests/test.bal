@@ -41,12 +41,71 @@ string queryParamSelect = "$select=subject";
 string queryParamTop = "$top=5";
 string queryParamCount = "$count=true";
 
+@test:BeforeSuite
+function afterSuiteCreateEventandCalendar() {
+    log:printInfo("client->testCreateEvent()");
+    EventMetadata eventMetadata = {
+        subject: "Test-Subject",
+        body: {
+            content: "Test-Body"
+        },
+        'start: {
+            dateTime: "2021-07-16T12:00:00",
+            timeZone: TIMEZONE_LK
+        },
+        end: {
+            dateTime: "2021-07-16T14:00:00",
+            timeZone: TIMEZONE_LK
+        },
+        location: {
+            displayName: "Harry's Bar"
+        },
+        attendees: [
+            {
+                emailAddress: {
+                    address: "samanthab@contoso.onmicrosoft.com",
+                    name: "Samantha Booth"
+                },
+                'type: ATTENDEE_TYPE_REQUIRED,
+                status: {
+                    response: RESPONSE_NOT_RESPONDED
+                }
+            }
+        ],
+        allowNewTimeProposals: true
+    };
+
+    Event|error generatedEvent = calendarClient->createEvent(eventMetadata);
+    if (generatedEvent is Event) {
+        test:assertNotEquals(generatedEvent.id, EMPTY_STRING, "Empty Event ID");
+        eventId = generatedEvent.id.toString();
+        log:printInfo("Event created with ID : " + eventId.toString());
+    } else {
+        test:assertFail(msg = generatedEvent.message());
+    }
+    io:println("\n\n");
+
+    log:printInfo("client->testCreateCalendar()");
+    CalendarMetadata calendarMetadata = {
+        name: "Ballerina-Test-Calendar"
+    };
+    Calendar|error response = calendarClient->createCalendar(calendarMetadata);
+    if (response is Calendar) {
+        test:assertNotEquals(response.id.toString(), EMPTY_STRING, "Empty Calender ID.");
+        calendarId = response.id.toString();
+        log:printInfo("Calendar created with ID : " + calendarId);
+    } else {
+        log:printError(response.toString());
+        test:assertFail(msg = response.message());
+    }
+    io:println("\n\n");
+}
+
 # Tests related to `Event` resource operations
 # Test - Get `Event` by ID
 @test:Config {
     enable: true,
-    groups: ["events"],
-    dependsOn: [testCreateEvent]
+    groups: ["events"]
 }
 function testGetEvent() {
     log:printInfo("client->testGetEvent()");
@@ -63,8 +122,7 @@ function testGetEvent() {
 # Test - Get `Event` by ID using preference headers like timezone, content type
 @test:Config {
     enable: true,
-    groups: ["events"],
-    dependsOn: [testCreateEvent]
+    groups: ["events"]
 }
 function testGetEventWithPreferenceHeaders() {
     log:printInfo("client->testGetEventWithPreferenceHeaders()");
@@ -82,8 +140,7 @@ function testGetEventWithPreferenceHeaders() {
 # More details : https://docs.microsoft.com/en-us/graph/query-parameters
 @test:Config {
     enable: true,
-    groups: ["events"],
-    dependsOn: [testCreateEvent]
+    groups: ["events"]
 }
 function testGetEventWithQueryParameters() {
     log:printInfo("client->testGetEventWithPreferenceHeaders()");
@@ -121,7 +178,7 @@ function testListEvents() returns error? {
 # Test - Create an `Event` quickly with minimum details needed
 @test:Config {
     groups: ["events"],
-    enable: true
+    enable: false
 }
 function testAddQuickEvent() {
     log:printInfo("client->testAddQuickEvent()");
@@ -135,54 +192,6 @@ function testAddQuickEvent() {
     } else {
         log:printError(event.toString());
         test:assertFail(msg = event.message());
-    }
-    io:println("\n\n");
-}
-
-# Test - Create an `Event` by providing `EventMetadata` body
-@test:Config {
-    enable: true,
-    groups: ["events"]
-}
-function testCreateEvent() {
-    log:printInfo("client->testCreateEvent()");
-    EventMetadata eventMetadata = {
-        subject: "Test-Subject",
-        body: {
-            content: "Test-Body"
-        },
-        'start: {
-            dateTime: "2021-07-16T12:00:00",
-            timeZone: TIMEZONE_LK
-        },
-        end: {
-            dateTime: "2021-07-16T14:00:00",
-            timeZone: TIMEZONE_LK
-        },
-        location: {
-            displayName: "Harry's Bar"
-        },
-        attendees: [
-            {
-                emailAddress: {
-                    address: "samanthab@contoso.onmicrosoft.com",
-                    name: "Samantha Booth"
-                },
-                'type: ATTENDEE_TYPE_REQUIRED,
-                status: {
-                    response: RESPONSE_NOT_RESPONDED
-                }
-            }
-        ],
-        allowNewTimeProposals: true
-    };
-    Event|error generatedEvent = calendarClient->createEvent(eventMetadata);
-    if (generatedEvent is Event) {
-        test:assertNotEquals(generatedEvent.id, EMPTY_STRING, "Empty Event ID");
-        eventId = generatedEvent.id.toString();
-        log:printInfo("Event created with ID : " + eventId.toString());
-    } else {
-        test:assertFail(msg = generatedEvent.message());
     }
     io:println("\n\n");
 }
@@ -255,8 +264,7 @@ function testCreateEventWithMultipleLocations() {
     Event|error generatedEvent = calendarClient->createEvent(eventMetadata);
     if (generatedEvent is Event) {
         test:assertNotEquals(generatedEvent.id, EMPTY_STRING, "Empty Event ID");
-        eventId = generatedEvent.id.toString();
-        log:printInfo("Event created with ID : " + eventId);
+        log:printInfo("Event created with ID : " + generatedEvent.id);
     } else {
         test:assertFail(msg = generatedEvent.message());
     }
@@ -266,8 +274,7 @@ function testCreateEventWithMultipleLocations() {
 # Test - Update an `Event` by providing `EventMetadata` body
 @test:Config {
     enable: true,
-    groups: ["events"],
-    dependsOn: [testCreateEvent]
+    groups: ["events"]
 }
 function testUpdateEvent() {
     log:printInfo("client->testUpdateEvent()");
@@ -312,8 +319,7 @@ function testUpdateEvent() {
 # Test - Get a `Calendar` by ID
 @test:Config {
     enable: true,
-    groups: ["calendars"],
-    dependsOn: [testCreateCalendar]
+    groups: ["calendars"]
 }
 function testGetCalendar() {
     log:printInfo("client->testGetCalendar()");
@@ -331,8 +337,7 @@ function testGetCalendar() {
 # Test - Update a `Calendar` with name, color, default properties
 @test:Config {
     enable: true,
-    groups: ["calendars"],
-    dependsOn: [testCreateCalendar]
+    groups: ["calendars"]
 }
 function testUpdateCalendar() {
     log:printInfo("client->testUpdateCalendar()");
@@ -354,8 +359,7 @@ function testUpdateCalendar() {
 # + return - error or null on failure. 
 @test:Config {
     enable: true,
-    groups: ["calendars"],
-    dependsOn: [testCreateCalendar]
+    groups: ["calendars"]
 }
 function testListCalendars() returns error? {
     log:printInfo("client->testListCalendars()");
@@ -367,28 +371,6 @@ function testListCalendars() returns error? {
         });
     } else {
         test:assertFail(msg = eventStream.message());
-    }
-    io:println("\n\n");
-}
-
-# Test - Create a `Calendar` providing `CalendarMetadata` object
-@test:Config {
-    enable: true,
-    groups: ["calendars"]
-}
-function testCreateCalendar() {
-    log:printInfo("client->testCreateCalendar()");
-    CalendarMetadata calendarMetadata = {
-        name: "Ballerina-Test-Calendar"
-    };
-    Calendar|error response = calendarClient->createCalendar(calendarMetadata);
-    if (response is Calendar) {
-        test:assertNotEquals(response.id.toString(), EMPTY_STRING, "Empty Calender ID.");
-        calendarId = response.id.toString();
-        log:printInfo("Calendar created with ID : " + calendarId);
-    } else {
-        log:printError(response.toString());
-        test:assertFail(msg = response.message());
     }
     io:println("\n\n");
 }
