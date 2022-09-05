@@ -31,7 +31,7 @@ class EventStream {
     isolated function init(ConnectionConfig config, http:Client httpClient, string path, TimeZone? timeZone = (),
                                     ContentType? contentType = (), string? queryParam = ()) returns error? {
         self.httpClientConfig = {
-            auth: config.auth,
+            auth: let var authConfig = config.auth in (authConfig is BearerTokenConfig ? authConfig : {...authConfig}),
             httpVersion: config.httpVersion,
             http1Settings: {...config.http1Settings},
             http2Settings: config.http2Settings,
@@ -123,7 +123,7 @@ class CalendarStream {
     returns error? {
         self.httpClient = httpClient;
         self.httpClientConfig = {
-            auth: config.auth,
+            auth: let var authConfig = config.auth in (authConfig is BearerTokenConfig ? authConfig : {...authConfig}),
             httpVersion: config.httpVersion,
             http1Settings: {...config.http1Settings},
             http2Settings: config.http2Settings,
