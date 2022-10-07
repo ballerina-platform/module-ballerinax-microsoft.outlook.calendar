@@ -16,6 +16,7 @@
 
 import ballerina/http;
 import ballerina/log;
+import ballerinax/'client.config;
 
 # Ballerina Microsoft Outlook Calendar connector provides the capability to access MS Outlook Calendar API.
 # This connector provides the capability to easily create appointments & events, organize meetings, 
@@ -39,23 +40,7 @@ public isolated client class Client {
     # + config - Configuration for the connector
     # + return - `http:Error` in case of failure to initialize or `null` if successfully initialized 
     public isolated function init(ConnectionConfig config) returns error? {
-        http:ClientConfiguration httpClientConfig = {
-            auth: let var authConfig = config.auth in (authConfig is BearerTokenConfig ? authConfig : {...authConfig}),
-            httpVersion: config.httpVersion,
-            http1Settings: {...config.http1Settings},
-            http2Settings: config.http2Settings,
-            timeout: config.timeout,
-            forwarded: config.forwarded,
-            poolConfig: config.poolConfig,
-            cache: config.cache,
-            compression: config.compression,
-            circuitBreaker: config.circuitBreaker,
-            retryConfig: config.retryConfig,
-            responseLimits: config.responseLimits,
-            secureSocket: config.secureSocket,
-            proxy: config.proxy,
-            validation: config.validation
-        };
+        http:ClientConfiguration httpClientConfig = check config:constructHTTPClientConfig(config);
         self.config = config.cloneReadOnly();
         self.httpClient = check new (BASE_URL, httpClientConfig);
     }
