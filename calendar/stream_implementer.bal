@@ -15,6 +15,7 @@
 // under the License.
 
 import ballerina/http;
+import ballerinax/'client.config;
 
 class EventStream {
     private Event[] currentEntries = [];
@@ -30,23 +31,7 @@ class EventStream {
 
     isolated function init(ConnectionConfig config, http:Client httpClient, string path, TimeZone? timeZone = (),
                                     ContentType? contentType = (), string? queryParam = ()) returns error? {
-        self.httpClientConfig = {
-            auth: let var authConfig = config.auth in (authConfig is BearerTokenConfig ? authConfig : {...authConfig}),
-            httpVersion: config.httpVersion,
-            http1Settings: {...config.http1Settings},
-            http2Settings: config.http2Settings,
-            timeout: config.timeout,
-            forwarded: config.forwarded,
-            poolConfig: config.poolConfig,
-            cache: config.cache,
-            compression: config.compression,
-            circuitBreaker: config.circuitBreaker,
-            retryConfig: config.retryConfig,
-            responseLimits: config.responseLimits,
-            secureSocket: config.secureSocket,
-            proxy: config.proxy,
-            validation: config.validation
-        };
+        self.httpClientConfig = check config:constructHTTPClientConfig(config);
         self.config = config;
         self.httpClient = httpClient;
         self.path = path;
@@ -122,23 +107,7 @@ class CalendarStream {
     isolated function init(ConnectionConfig config, http:Client httpClient, string path, string? queryParam = ())
     returns error? {
         self.httpClient = httpClient;
-        self.httpClientConfig = {
-            auth: let var authConfig = config.auth in (authConfig is BearerTokenConfig ? authConfig : {...authConfig}),
-            httpVersion: config.httpVersion,
-            http1Settings: {...config.http1Settings},
-            http2Settings: config.http2Settings,
-            timeout: config.timeout,
-            forwarded: config.forwarded,
-            poolConfig: config.poolConfig,
-            cache: config.cache,
-            compression: config.compression,
-            circuitBreaker: config.circuitBreaker,
-            retryConfig: config.retryConfig,
-            responseLimits: config.responseLimits,
-            secureSocket: config.secureSocket,
-            proxy: config.proxy,
-            validation: config.validation
-        };
+        self.httpClientConfig = check config:constructHTTPClientConfig(config);
         self.path = path;
         self.queryParam = queryParam;
         self.nextLink = EMPTY_STRING;
