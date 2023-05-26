@@ -7,7 +7,7 @@ This package provides the capability to create appointments, create events, orga
 ### Compatibility
 |                                 | Version                         |
 |---------------------------------|---------------------------------|
-| Ballerina Language              | Ballerina Swan Lake 2201.3.0    |
+| Ballerina Language              | Ballerina Swan Lake 2201.4.1    |
 | Microsoft Outlook Calendar API  | v1.0                            |
 
 
