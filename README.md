@@ -3,6 +3,7 @@ Ballerina Microsoft Outlook Connector
 
 [![Build Status](https://github.com/ballerina-platform/module-ballerinax-microsoft.outlook.calendar/workflows/CI/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-microsoft.outlook.calendar/actions?query=workflow%3ACI)
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerinax-microsoft.outlook.calendar.svg)](https://github.com/ballerina-platform/module-ballerinax-microsoft.outlook.calendar/commits/master)
+[![GraalVM Check](https://github.com/ballerina-platform/module-ballerinax-microsoft.outlook.calendar/actions/workflows/build-with-bal-test-native.yml/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-microsoft.outlook.calendar/actions/workflows/build-with-bal-test-native.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 [Microsoft Outlook Calendar](https://www.microsoft.com/en-ww/microsoft-365/outlook.calendar) is composed of the calendar and scheduling component of Outlook developed by Microsoft.
