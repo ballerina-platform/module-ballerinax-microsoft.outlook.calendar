@@ -32,13 +32,13 @@ calendar:ConnectionConfig configuration = {
 };
 
 calendar:Client calendarClient = check new (configuration);
+string calendarId = "calendarId";
 
 public function main() {
-    stream<calendar:Event, error?>|error eventStream 
-        = calendarClient->listEvents(timeZone=calendar:TIMEZONE_AD, contentType=calendar:CONTENT_TYPE_TEXT);
-    if (eventStream is stream<calendar:Event, error?>) {
-        error? e = eventStream.forEach(isolated function (calendar:Event event) {
-           log:printInfo(event.id.toString());
-        }); 
+    calendar:Calendar|error response = calendarClient->getCalendar(calendarId);
+    if (response is calendar:Calendar) {
+        log:printInfo("Calendar received with ID : " + response.id.toString());
+    } else {
+        log:printError(response.toString());
     }
 }

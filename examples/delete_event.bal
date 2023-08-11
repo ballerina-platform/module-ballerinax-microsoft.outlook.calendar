@@ -32,16 +32,13 @@ calendar:ConnectionConfig configuration = {
 };
 
 calendar:Client calendarClient = check new (configuration);
-string calendarId = "calendarId";
+string eventId = "eventId";
 
 public function main() {
-    string newName = "Updated ballerina calendar";
-    calendar:CalendarColor newColor = calendar:CALENDAR_COLOR_AUTO;
-    boolean makeDefault = false;
-    calendar:Calendar|error response = calendarClient->updateCalendar(calendarId, newName, newColor, makeDefault);
+    error? response = calendarClient->deleteEvent(eventId);
     if (response is error) {
-        log:printError("Error on updating the Calendar with ID : " +calendarId);
+        log:printError("Error with deleting Event with ID : " + eventId);
     } else {
-        log:printInfo("Calendar updated with ID : " +calendarId);
+        log:printInfo("Event deleted with ID : " + eventId);
     }
 }

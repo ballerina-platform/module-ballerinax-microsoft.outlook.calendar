@@ -32,15 +32,16 @@ calendar:ConnectionConfig configuration = {
 };
 
 calendar:Client calendarClient = check new (configuration);
+string calendarId = "calendarId";
 
 public function main() {
-    calendar:CalendarMetadata calendarMetadata = {
-       name: "Ballerina-Test-Calendar"
-    };
-    calendar:Calendar|error response = calendarClient->createCalendar(calendarMetadata);
-    if (response is calendar:Calendar) {
-        log:printInfo("Calendar created with ID : " +response.id.toString());
+    string newName = "Updated ballerina calendar";
+    calendar:CalendarColor newColor = calendar:CALENDAR_COLOR_AUTO;
+    boolean makeDefault = false;
+    calendar:Calendar|error response = calendarClient->updateCalendar(calendarId, newName, newColor, makeDefault);
+    if (response is error) {
+        log:printError("Error on updating the Calendar with ID : " + calendarId);
     } else {
-        log:printError(response.toString());
+        log:printInfo("Calendar updated with ID : " + calendarId);
     }
 }

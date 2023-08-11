@@ -35,31 +35,31 @@ calendar:Client calendarClient = check new (configuration);
 string eventId = "eventId";
 
 public function main() {
-    calendar:EventMetadata eventBody  = {
-        subject : "Changed the Subject during Update Event",
-        isAllDay : false, // if this is true, you need to provide `Start` and `End` also.
-        'start : {
-            dateTime : "2015-09-08T00:00:00.000Z",
-            timeZone : calendar:TIMEZONE_AD
+    calendar:EventMetadata eventBody = {
+        subject: "Changed the Subject during Update Event",
+        isAllDay: false, // if this is true, you need to provide `Start` and `End` also.
+        'start: {
+            dateTime: "2015-09-08T00:00:00.000Z",
+            timeZone: calendar:TIMEZONE_AD
         },
-        end : {
-            dateTime : "2015-09-09T00:00:00.000Z",
-            timeZone : calendar: TIMEZONE_AD
-        }, 
+        end: {
+            dateTime: "2015-09-09T00:00:00.000Z",
+            timeZone: calendar:TIMEZONE_AD
+        },
         responseStatus: {
             response: calendar:RESPONSE_ACCEPTED
         },
-        recurrence : null,
-        importance : calendar:IMPORTANCE_HIGH,
-        reminderMinutesBeforeStart : 99,
-        isOnlineMeeting : true,
-        sensitivity : calendar:SENSITIVITY_PERSONAL,
-        showAs : calendar:SHOW_AS_BUSY,
-        onlineMeetingProvider : calendar:ONLINE_MEETING_PROVIDER_TYPE_TEAMS_FOR_BUSINESS,
-        isReminderOn : true,
-        hideAttendees : false,
-        responseRequested : true,
-        categories : ["Red category"]
+        recurrence: null,
+        importance: calendar:IMPORTANCE_HIGH,
+        reminderMinutesBeforeStart: 99,
+        isOnlineMeeting: true,
+        sensitivity: calendar:SENSITIVITY_PERSONAL,
+        showAs: calendar:SHOW_AS_BUSY,
+        onlineMeetingProvider: calendar:ONLINE_MEETING_PROVIDER_TYPE_TEAMS_FOR_BUSINESS,
+        isReminderOn: true,
+        hideAttendees: false,
+        responseRequested: true,
+        categories: ["Red category"]
     };
     calendar:Event|error response = calendarClient->updateEvent(eventId, eventBody);
     if (response is calendar:Event) {

@@ -36,7 +36,7 @@ calendar:Client calendarClient = check new (configuration);
 public function main() {
     calendar:EventMetadata eventMetadata = {
         subject: "Test-Subject",
-        body : {
+        body: {
             content: "Test-Body"
         },
         'start: {
@@ -47,19 +47,21 @@ public function main() {
             dateTime: "2021-07-16T14:00:00",
             timeZone: calendar:TIMEZONE_LK
         },
-        location:{
-            displayName:"Harry's Bar"
+        location: {
+            displayName: "Harry's Bar"
         },
-        attendees: [{
-            emailAddress: {
-                address:"samanthab@contoso.onmicrosoft.com",
-                name: "Samantha Booth"
-            },
-            'type: calendar:ATTENDEE_TYPE_REQUIRED,
-            status: {
-                response : calendar:RESPONSE_NOT_RESPONDED
+        attendees: [
+            {
+                emailAddress: {
+                    address: "samanthab@contoso.onmicrosoft.com",
+                    name: "Samantha Booth"
+                },
+                'type: calendar:ATTENDEE_TYPE_REQUIRED,
+                status: {
+                    response: calendar:RESPONSE_NOT_RESPONDED
+                }
             }
-        }],
+        ],
         allowNewTimeProposals: true
     };
     calendar:Event|error generatedEvent = calendarClient->createEvent(eventMetadata);
