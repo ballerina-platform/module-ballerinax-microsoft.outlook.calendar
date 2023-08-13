@@ -37,7 +37,7 @@ public function main() {
     string subject = "Test-Subject";
     string body = "Test-Body";
     calendar:Event|error event = calendarClient->addQuickEvent(subject, body);
-    if (response is calendar:Event) {
-        log:printInfo(response.toString());
+    if (event is calendar:Event) {
+        log:printInfo(event.toString());
     }
 }

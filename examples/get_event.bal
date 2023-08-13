@@ -36,7 +36,7 @@ string eventId = "eventId";
 
 public function main() {
     calendar:Event|error event = calendarClient->getEvent(eventId);
-    if (response is calendar:Event) {
-        log:printInfo(response.toString());
+    if (event is calendar:Event) {
+        log:printInfo(event.toString());
     }
 }

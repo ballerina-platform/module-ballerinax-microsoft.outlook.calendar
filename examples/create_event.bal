@@ -65,7 +65,7 @@ public function main() {
         allowNewTimeProposals: true
     };
     calendar:Event|error generatedEvent = calendarClient->createEvent(eventMetadata);
-    if (response is calendar:Event) {
-        log:printInfo(response.toString());
+    if (generatedEvent is calendar:Event) {
+        log:printInfo(generatedEvent.toString());
     }
 }
