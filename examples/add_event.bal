@@ -32,13 +32,12 @@ calendar:ConnectionConfig configuration = {
 };
 
 calendar:Client calendarClient = check new (configuration);
-string eventId = "eventId";
 
 public function main() {
-    error? response = calendarClient->deleteEvent(eventId);
-    if (response is error) {
-        log:printError("Error with deleting Event with ID : " +eventId);
-    } else {
-        log:printInfo("Event deleted with ID : " +eventId);
+    string subject = "Test-Subject";
+    string body = "Test-Body";
+    calendar:Event|error event = calendarClient->addQuickEvent(subject, body);
+    if (event is calendar:Event) {
+        log:printInfo(event.toString());
     }
 }

@@ -32,15 +32,11 @@ calendar:ConnectionConfig configuration = {
 };
 
 calendar:Client calendarClient = check new (configuration);
+string eventId = "eventId";
 
 public function main() {
-    calendar:CalendarMetadata calendarMetadata = {
-       name: "Ballerina-Test-Calendar"
-    };
-    calendar:Calendar|error response = calendarClient->createCalendar(calendarMetadata);
-    if (response is calendar:Calendar) {
-        log:printInfo("Calendar created with ID : " +response.id.toString());
-    } else {
-        log:printError(response.toString());
+    calendar:Event|error event = calendarClient->getEvent(eventId);
+    if (event is calendar:Event) {
+        log:printInfo(event.toString());
     }
 }

@@ -32,13 +32,13 @@ calendar:ConnectionConfig configuration = {
 };
 
 calendar:Client calendarClient = check new (configuration);
-string calendarId = "calendarId";
 
 public function main() {
-    error? response = calendarClient->deleteCalendar(calendarId);
-    if (response is error) {
-        log:printError("Calendar deleted with ID : " +calendarId);
-    } else {
-        log:printInfo("Calendar deleted with ID : " +calendarId);
+    stream<calendar:Event, error?>|error eventStream
+        = calendarClient->listEvents(timeZone = calendar:TIMEZONE_AD, contentType = calendar:CONTENT_TYPE_TEXT);
+    if (eventStream is stream<calendar:Event, error?>) {
+        error? e = eventStream.forEach(isolated function(calendar:Event event) {
+            log:printInfo(event.id.toString());
+        });
     }
 }

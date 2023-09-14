@@ -32,12 +32,16 @@ calendar:ConnectionConfig configuration = {
 };
 
 calendar:Client calendarClient = check new (configuration);
+string calendarId = "calendarId";
 
 public function main() {
-    string subject = "Test-Subject";
-    string body = "Test-Body";
-    calendar:Event|error event = calendarClient->addQuickEvent(subject, body);
-    if (response is calendar:Event) {
-        log:printInfo(response.toString());
+    string newName = "Updated ballerina calendar";
+    calendar:CalendarColor newColor = calendar:CALENDAR_COLOR_AUTO;
+    boolean makeDefault = false;
+    calendar:Calendar|error response = calendarClient->updateCalendar(calendarId, newName, newColor, makeDefault);
+    if (response is error) {
+        log:printError("Error on updating the Calendar with ID : " + calendarId);
+    } else {
+        log:printInfo("Calendar updated with ID : " + calendarId);
     }
 }

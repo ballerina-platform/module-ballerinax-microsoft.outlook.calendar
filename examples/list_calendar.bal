@@ -34,36 +34,10 @@ calendar:ConnectionConfig configuration = {
 calendar:Client calendarClient = check new (configuration);
 
 public function main() {
-    calendar:EventMetadata eventMetadata = {
-        subject: "Test-Subject",
-        body : {
-            content: "Test-Body"
-        },
-        'start: {
-            dateTime: "2021-07-16T12:00:00",
-            timeZone: calendar:TIMEZONE_LK
-        },
-        end: {
-            dateTime: "2021-07-16T14:00:00",
-            timeZone: calendar:TIMEZONE_LK
-        },
-        location:{
-            displayName:"Harry's Bar"
-        },
-        attendees: [{
-            emailAddress: {
-                address:"samanthab@contoso.onmicrosoft.com",
-                name: "Samantha Booth"
-            },
-            'type: calendar:ATTENDEE_TYPE_REQUIRED,
-            status: {
-                response : calendar:RESPONSE_NOT_RESPONDED
-            }
-        }],
-        allowNewTimeProposals: true
-    };
-    calendar:Event|error generatedEvent = calendarClient->createEvent(eventMetadata);
-    if (response is calendar:Event) {
-        log:printInfo(response.toString());
+    stream<calendar:Calendar, error?>|error eventStream = calendarClient->listCalendars();
+    if (eventStream is stream<calendar:Calendar, error?>) {
+        error? e = eventStream.forEach(isolated function(calendar:Calendar calendar) {
+            log:printInfo(calendar.id.toString());
+        });
     }
 }
