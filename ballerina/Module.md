@@ -1,8 +1,16 @@
 ## Overview
-Ballerina connector for Microsoft Outlook Calendar is connecting the Calendar API in Microsoft Graph via Ballerina language easily. It provides the capability to perform CRUD (Create, Read, Update, and Delete) operations on `Event` & `Calendar` stored in Microsoft OneDrive.
+The connector for Microsoft Outlook Calendar is connecting the Calendar API in Microsoft Graph via Ballerina language easily. It provides the capability to perform CRUD (Create, Read, Update, and Delete) operations on `Event` & `Calendar` stored in Microsoft OneDrive.
 
 This module supports the Microsoft Outlook Calendar API version 1.0.
  
+
+### Key Features
+
+- Create, read, update, and delete calendar events
+- Manage meeting invitations and responses
+- Access calendar availability and scheduling
+- Support for recurring events and reminders
+
 ## Prerequisites
 Before using this connector in your Ballerina application, complete the following:
 * Create a [Microsoft Outlook Account](https://outlook.live.com/owa/)
