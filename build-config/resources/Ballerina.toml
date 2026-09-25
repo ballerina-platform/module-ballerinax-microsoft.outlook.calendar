@@ -1,16 +1,13 @@
 [package]
-distribution = "2201.12.0"
+distribution = "2201.13.4"
 org = "ballerinax"
 name = "microsoft.outlook.calendar"
 version = "@toml.version@"
 license = ["Apache-2.0"]
 authors = ["Ballerina"]
-keywords = [] # TODO: Add keywords
-# icon = "icon.png" # TODO: Add icon
+keywords = ["Vendor/Microsoft", "Area/Productivity & Collaboration", "Type/Connector"]
+icon = "icon.png"
 repository = "https://github.com/ballerina-platform/module-ballerinax-microsoft.outlook.calendar"
 
 [build-options]
 observabilityIncluded = true
-
-[platform.java21]
-graalvmCompatible = true

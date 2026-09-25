@@ -53,3 +53,9 @@ build
 
 # Ignore Docker env file
 docker.env
+
+# Cached Microsoft Graph source spec (downloaded by docs/resources/script.py)
+docs/resources/msgraph-v1.0-openapi.yaml
+
+# Example dependency lock files
+examples/*/Dependencies.toml
