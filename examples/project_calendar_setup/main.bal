@@ -88,6 +88,8 @@ public function main() returns error? {
         if nextLink is () {
             break;
         }
+        // The client cannot request a raw URL, so this example uses offset paging: it
+        // repeats the query with `skip` set to the number of events read so far.
         page = check calendarClient->listGroupEvents(groupId, calendarId, orderby = ["start/dateTime"],
             top = 50, skip = count);
     }
@@ -95,7 +97,9 @@ public function main() returns error? {
 }
 
 function findOrCreateGroup(calendar:Client calendarClient, string name) returns string|error {
-    calendar:CalendarGroupCollection groups = check calendarClient->listCalendarGroups(filter = string `name eq '${name}'`);
+    // OData string literals escape a single quote by doubling it.
+    string escapedName = re `'`.replaceAll(name, "''");
+    calendar:CalendarGroupCollection groups = check calendarClient->listCalendarGroups(filter = string `name eq '${escapedName}'`);
     calendar:CalendarGroup[] matches = groups.value ?: [];
     if matches.length() > 0 {
         string? existing = matches[0].id;
