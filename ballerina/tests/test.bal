@@ -321,9 +321,8 @@ isolated function testListUserEvents() returns error? {
     test:assertTrue(response.value !is ());
 }
 
-isolated function fileAttachment(string name) returns Attachment => {
-    atOdataType: "#microsoft.graph.fileAttachment",
+isolated function fileAttachment(string name) returns FileAttachment => {
     name,
     contentType: "text/plain",
-    "contentBytes": "SGVsbG8gZnJvbSBCYWxsZXJpbmE="
+    contentBytes: "SGVsbG8gZnJvbSBCYWxsZXJpbmE="
 };

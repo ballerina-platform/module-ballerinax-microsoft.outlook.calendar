@@ -236,9 +236,9 @@ public isolated client class Client {
     #
     # + eventId - The unique identifier of event
     # + headers - Headers to be sent with the request 
-    # + payload - The me calendar events attachments to create 
-    # + return - The created me calendar events attachments 
-    remote isolated function createDefaultEventAttachment(string eventId, Attachment payload, map<string|string[]> headers = {}) returns Attachment|error {
+    # + payload - The attachment to add: a `FileAttachment` (`name`, `contentBytes`) or an `ItemAttachment` (`name`, `item`) 
+    # + return - The created attachment 
+    remote isolated function createDefaultEventAttachment(string eventId, NewAttachment payload, map<string|string[]> headers = {}) returns Attachment|error {
         string resourcePath = string `/me/calendar/events/${getEncodedUri(eventId)}/attachments`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);
@@ -328,9 +328,9 @@ public isolated client class Client {
     #
     # + eventId - The unique identifier of event
     # + headers - Headers to be sent with the request 
-    # + payload - The me calendar events extensions to create 
-    # + return - The created me calendar events extensions 
-    remote isolated function createDefaultEventExtension(string eventId, Extension payload, map<string|string[]> headers = {}) returns Extension|error {
+    # + payload - The open extension to create: `extensionName` plus the custom properties 
+    # + return - The created open extension 
+    remote isolated function createDefaultEventExtension(string eventId, OpenTypeExtension payload, map<string|string[]> headers = {}) returns OpenTypeExtension|error {
         string resourcePath = string `/me/calendar/events/${getEncodedUri(eventId)}/extensions`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);
@@ -369,9 +369,9 @@ public isolated client class Client {
     # + eventId - The unique identifier of event
     # + extensionId - The unique identifier of extension
     # + headers - Headers to be sent with the request 
-    # + payload - The me calendar events extensions properties to update 
-    # + return - The updated default event extension 
-    remote isolated function updateDefaultEventExtension(string eventId, string extensionId, Extension payload, map<string|string[]> headers = {}) returns Extension|error {
+    # + payload - The open extension properties to change or add 
+    # + return - The updated open extension 
+    remote isolated function updateDefaultEventExtension(string eventId, string extensionId, OpenTypeExtension payload, map<string|string[]> headers = {}) returns OpenTypeExtension|error {
         string resourcePath = string `/me/calendar/events/${getEncodedUri(eventId)}/extensions/${getEncodedUri(extensionId)}`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);
@@ -920,9 +920,9 @@ public isolated client class Client {
     # + calendarId - The unique identifier of calendar
     # + eventId - The unique identifier of event
     # + headers - Headers to be sent with the request 
-    # + payload - The calendar groups calendars events attachments to create 
-    # + return - The created calendar groups calendars events attachments 
-    remote isolated function createGroupEventAttachment(string calendarGroupId, string calendarId, string eventId, Attachment payload, map<string|string[]> headers = {}) returns Attachment|error {
+    # + payload - The attachment to add: a `FileAttachment` (`name`, `contentBytes`) or an `ItemAttachment` (`name`, `item`) 
+    # + return - The created attachment 
+    remote isolated function createGroupEventAttachment(string calendarGroupId, string calendarId, string eventId, NewAttachment payload, map<string|string[]> headers = {}) returns Attachment|error {
         string resourcePath = string `/me/calendarGroups/${getEncodedUri(calendarGroupId)}/calendars/${getEncodedUri(calendarId)}/events/${getEncodedUri(eventId)}/attachments`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);
@@ -1026,9 +1026,9 @@ public isolated client class Client {
     # + calendarId - The unique identifier of calendar
     # + eventId - The unique identifier of event
     # + headers - Headers to be sent with the request 
-    # + payload - The calendar groups calendars events extensions to create 
-    # + return - The created calendar groups calendars events extensions 
-    remote isolated function createGroupEventExtension(string calendarGroupId, string calendarId, string eventId, Extension payload, map<string|string[]> headers = {}) returns Extension|error {
+    # + payload - The open extension to create: `extensionName` plus the custom properties 
+    # + return - The created open extension 
+    remote isolated function createGroupEventExtension(string calendarGroupId, string calendarId, string eventId, OpenTypeExtension payload, map<string|string[]> headers = {}) returns OpenTypeExtension|error {
         string resourcePath = string `/me/calendarGroups/${getEncodedUri(calendarGroupId)}/calendars/${getEncodedUri(calendarId)}/events/${getEncodedUri(eventId)}/extensions`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);
@@ -1073,9 +1073,9 @@ public isolated client class Client {
     # + eventId - The unique identifier of event
     # + extensionId - The unique identifier of extension
     # + headers - Headers to be sent with the request 
-    # + payload - The calendar groups calendars events extensions properties to update 
-    # + return - The updated group event extension 
-    remote isolated function updateGroupEventExtension(string calendarGroupId, string calendarId, string eventId, string extensionId, Extension payload, map<string|string[]> headers = {}) returns Extension|error {
+    # + payload - The open extension properties to change or add 
+    # + return - The updated open extension 
+    remote isolated function updateGroupEventExtension(string calendarGroupId, string calendarId, string eventId, string extensionId, OpenTypeExtension payload, map<string|string[]> headers = {}) returns OpenTypeExtension|error {
         string resourcePath = string `/me/calendarGroups/${getEncodedUri(calendarGroupId)}/calendars/${getEncodedUri(calendarId)}/events/${getEncodedUri(eventId)}/extensions/${getEncodedUri(extensionId)}`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);
@@ -1596,9 +1596,9 @@ public isolated client class Client {
     # + calendarId - The unique identifier of calendar
     # + eventId - The unique identifier of event
     # + headers - Headers to be sent with the request 
-    # + payload - The me calendars events attachments to create 
-    # + return - The created me calendars events attachments 
-    remote isolated function createCalendarEventAttachment(string calendarId, string eventId, Attachment payload, map<string|string[]> headers = {}) returns Attachment|error {
+    # + payload - The attachment to add: a `FileAttachment` (`name`, `contentBytes`) or an `ItemAttachment` (`name`, `item`) 
+    # + return - The created attachment 
+    remote isolated function createCalendarEventAttachment(string calendarId, string eventId, NewAttachment payload, map<string|string[]> headers = {}) returns Attachment|error {
         string resourcePath = string `/me/calendars/${getEncodedUri(calendarId)}/events/${getEncodedUri(eventId)}/attachments`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);
@@ -1695,9 +1695,9 @@ public isolated client class Client {
     # + calendarId - The unique identifier of calendar
     # + eventId - The unique identifier of event
     # + headers - Headers to be sent with the request 
-    # + payload - The me calendars events extensions to create 
-    # + return - The created me calendars events extensions 
-    remote isolated function createCalendarEventExtension(string calendarId, string eventId, Extension payload, map<string|string[]> headers = {}) returns Extension|error {
+    # + payload - The open extension to create: `extensionName` plus the custom properties 
+    # + return - The created open extension 
+    remote isolated function createCalendarEventExtension(string calendarId, string eventId, OpenTypeExtension payload, map<string|string[]> headers = {}) returns OpenTypeExtension|error {
         string resourcePath = string `/me/calendars/${getEncodedUri(calendarId)}/events/${getEncodedUri(eventId)}/extensions`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);
@@ -1739,9 +1739,9 @@ public isolated client class Client {
     # + eventId - The unique identifier of event
     # + extensionId - The unique identifier of extension
     # + headers - Headers to be sent with the request 
-    # + payload - The me calendars events extensions properties to update 
-    # + return - The updated calendar event extension 
-    remote isolated function updateCalendarEventExtension(string calendarId, string eventId, string extensionId, Extension payload, map<string|string[]> headers = {}) returns Extension|error {
+    # + payload - The open extension properties to change or add 
+    # + return - The updated open extension 
+    remote isolated function updateCalendarEventExtension(string calendarId, string eventId, string extensionId, OpenTypeExtension payload, map<string|string[]> headers = {}) returns OpenTypeExtension|error {
         string resourcePath = string `/me/calendars/${getEncodedUri(calendarId)}/events/${getEncodedUri(eventId)}/extensions/${getEncodedUri(extensionId)}`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);
@@ -2082,9 +2082,9 @@ public isolated client class Client {
     #
     # + eventId - The unique identifier of event
     # + headers - Headers to be sent with the request 
-    # + payload - The me events attachments to create 
-    # + return - The created me events attachments 
-    remote isolated function createEventAttachment(string eventId, Attachment payload, map<string|string[]> headers = {}) returns Attachment|error {
+    # + payload - The attachment to add: a `FileAttachment` (`name`, `contentBytes`) or an `ItemAttachment` (`name`, `item`) 
+    # + return - The created attachment 
+    remote isolated function createEventAttachment(string eventId, NewAttachment payload, map<string|string[]> headers = {}) returns Attachment|error {
         string resourcePath = string `/me/events/${getEncodedUri(eventId)}/attachments`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);
@@ -2174,9 +2174,9 @@ public isolated client class Client {
     #
     # + eventId - The unique identifier of event
     # + headers - Headers to be sent with the request 
-    # + payload - The me events extensions to create 
-    # + return - The created me events extensions 
-    remote isolated function createEventExtension(string eventId, Extension payload, map<string|string[]> headers = {}) returns Extension|error {
+    # + payload - The open extension to create: `extensionName` plus the custom properties 
+    # + return - The created open extension 
+    remote isolated function createEventExtension(string eventId, OpenTypeExtension payload, map<string|string[]> headers = {}) returns OpenTypeExtension|error {
         string resourcePath = string `/me/events/${getEncodedUri(eventId)}/extensions`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);
@@ -2215,9 +2215,9 @@ public isolated client class Client {
     # + eventId - The unique identifier of event
     # + extensionId - The unique identifier of extension
     # + headers - Headers to be sent with the request 
-    # + payload - The me events extensions properties to update 
-    # + return - The updated event extension 
-    remote isolated function updateEventExtension(string eventId, string extensionId, Extension payload, map<string|string[]> headers = {}) returns Extension|error {
+    # + payload - The open extension properties to change or add 
+    # + return - The updated open extension 
+    remote isolated function updateEventExtension(string eventId, string extensionId, OpenTypeExtension payload, map<string|string[]> headers = {}) returns OpenTypeExtension|error {
         string resourcePath = string `/me/events/${getEncodedUri(eventId)}/extensions/${getEncodedUri(extensionId)}`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);
@@ -2625,9 +2625,9 @@ public isolated client class Client {
     # + userId - The unique identifier of user
     # + eventId - The unique identifier of event
     # + headers - Headers to be sent with the request 
-    # + payload - The users calendar events attachments to create 
-    # + return - The created users calendar events attachments 
-    remote isolated function createUserDefaultEventAttachment(string userId, string eventId, Attachment payload, map<string|string[]> headers = {}) returns Attachment|error {
+    # + payload - The attachment to add: a `FileAttachment` (`name`, `contentBytes`) or an `ItemAttachment` (`name`, `item`) 
+    # + return - The created attachment 
+    remote isolated function createUserDefaultEventAttachment(string userId, string eventId, NewAttachment payload, map<string|string[]> headers = {}) returns Attachment|error {
         string resourcePath = string `/users/${getEncodedUri(userId)}/calendar/events/${getEncodedUri(eventId)}/attachments`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);
@@ -2724,9 +2724,9 @@ public isolated client class Client {
     # + userId - The unique identifier of user
     # + eventId - The unique identifier of event
     # + headers - Headers to be sent with the request 
-    # + payload - The users calendar events extensions to create 
-    # + return - The created users calendar events extensions 
-    remote isolated function createUserDefaultEventExtension(string userId, string eventId, Extension payload, map<string|string[]> headers = {}) returns Extension|error {
+    # + payload - The open extension to create: `extensionName` plus the custom properties 
+    # + return - The created open extension 
+    remote isolated function createUserDefaultEventExtension(string userId, string eventId, OpenTypeExtension payload, map<string|string[]> headers = {}) returns OpenTypeExtension|error {
         string resourcePath = string `/users/${getEncodedUri(userId)}/calendar/events/${getEncodedUri(eventId)}/extensions`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);
@@ -2768,9 +2768,9 @@ public isolated client class Client {
     # + eventId - The unique identifier of event
     # + extensionId - The unique identifier of extension
     # + headers - Headers to be sent with the request 
-    # + payload - The users calendar events extensions properties to update 
-    # + return - The updated user default event extension 
-    remote isolated function updateUserDefaultEventExtension(string userId, string eventId, string extensionId, Extension payload, map<string|string[]> headers = {}) returns Extension|error {
+    # + payload - The open extension properties to change or add 
+    # + return - The updated open extension 
+    remote isolated function updateUserDefaultEventExtension(string userId, string eventId, string extensionId, OpenTypeExtension payload, map<string|string[]> headers = {}) returns OpenTypeExtension|error {
         string resourcePath = string `/users/${getEncodedUri(userId)}/calendar/events/${getEncodedUri(eventId)}/extensions/${getEncodedUri(extensionId)}`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);
@@ -3360,9 +3360,9 @@ public isolated client class Client {
     # + calendarId - The unique identifier of calendar
     # + eventId - The unique identifier of event
     # + headers - Headers to be sent with the request 
-    # + payload - The calendar groups calendars events attachments to create 
-    # + return - The created calendar groups calendars events attachments 
-    remote isolated function createUserGroupEventAttachment(string userId, string calendarGroupId, string calendarId, string eventId, Attachment payload, map<string|string[]> headers = {}) returns Attachment|error {
+    # + payload - The attachment to add: a `FileAttachment` (`name`, `contentBytes`) or an `ItemAttachment` (`name`, `item`) 
+    # + return - The created attachment 
+    remote isolated function createUserGroupEventAttachment(string userId, string calendarGroupId, string calendarId, string eventId, NewAttachment payload, map<string|string[]> headers = {}) returns Attachment|error {
         string resourcePath = string `/users/${getEncodedUri(userId)}/calendarGroups/${getEncodedUri(calendarGroupId)}/calendars/${getEncodedUri(calendarId)}/events/${getEncodedUri(eventId)}/attachments`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);
@@ -3473,9 +3473,9 @@ public isolated client class Client {
     # + calendarId - The unique identifier of calendar
     # + eventId - The unique identifier of event
     # + headers - Headers to be sent with the request 
-    # + payload - The calendar groups calendars events extensions to create 
-    # + return - The created calendar groups calendars events extensions 
-    remote isolated function createUserGroupEventExtension(string userId, string calendarGroupId, string calendarId, string eventId, Extension payload, map<string|string[]> headers = {}) returns Extension|error {
+    # + payload - The open extension to create: `extensionName` plus the custom properties 
+    # + return - The created open extension 
+    remote isolated function createUserGroupEventExtension(string userId, string calendarGroupId, string calendarId, string eventId, OpenTypeExtension payload, map<string|string[]> headers = {}) returns OpenTypeExtension|error {
         string resourcePath = string `/users/${getEncodedUri(userId)}/calendarGroups/${getEncodedUri(calendarGroupId)}/calendars/${getEncodedUri(calendarId)}/events/${getEncodedUri(eventId)}/extensions`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);
@@ -3523,9 +3523,9 @@ public isolated client class Client {
     # + eventId - The unique identifier of event
     # + extensionId - The unique identifier of extension
     # + headers - Headers to be sent with the request 
-    # + payload - The calendar groups calendars events extensions properties to update 
-    # + return - The updated user group event extension 
-    remote isolated function updateUserGroupEventExtension(string userId, string calendarGroupId, string calendarId, string eventId, string extensionId, Extension payload, map<string|string[]> headers = {}) returns Extension|error {
+    # + payload - The open extension properties to change or add 
+    # + return - The updated open extension 
+    remote isolated function updateUserGroupEventExtension(string userId, string calendarGroupId, string calendarId, string eventId, string extensionId, OpenTypeExtension payload, map<string|string[]> headers = {}) returns OpenTypeExtension|error {
         string resourcePath = string `/users/${getEncodedUri(userId)}/calendarGroups/${getEncodedUri(calendarGroupId)}/calendars/${getEncodedUri(calendarId)}/events/${getEncodedUri(eventId)}/extensions/${getEncodedUri(extensionId)}`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);
@@ -4084,9 +4084,9 @@ public isolated client class Client {
     # + calendarId - The unique identifier of calendar
     # + eventId - The unique identifier of event
     # + headers - Headers to be sent with the request 
-    # + payload - The users calendars events attachments to create 
-    # + return - The created users calendars events attachments 
-    remote isolated function createUserCalendarEventAttachment(string userId, string calendarId, string eventId, Attachment payload, map<string|string[]> headers = {}) returns Attachment|error {
+    # + payload - The attachment to add: a `FileAttachment` (`name`, `contentBytes`) or an `ItemAttachment` (`name`, `item`) 
+    # + return - The created attachment 
+    remote isolated function createUserCalendarEventAttachment(string userId, string calendarId, string eventId, NewAttachment payload, map<string|string[]> headers = {}) returns Attachment|error {
         string resourcePath = string `/users/${getEncodedUri(userId)}/calendars/${getEncodedUri(calendarId)}/events/${getEncodedUri(eventId)}/attachments`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);
@@ -4190,9 +4190,9 @@ public isolated client class Client {
     # + calendarId - The unique identifier of calendar
     # + eventId - The unique identifier of event
     # + headers - Headers to be sent with the request 
-    # + payload - The users calendars events extensions to create 
-    # + return - The created users calendars events extensions 
-    remote isolated function createUserCalendarEventExtension(string userId, string calendarId, string eventId, Extension payload, map<string|string[]> headers = {}) returns Extension|error {
+    # + payload - The open extension to create: `extensionName` plus the custom properties 
+    # + return - The created open extension 
+    remote isolated function createUserCalendarEventExtension(string userId, string calendarId, string eventId, OpenTypeExtension payload, map<string|string[]> headers = {}) returns OpenTypeExtension|error {
         string resourcePath = string `/users/${getEncodedUri(userId)}/calendars/${getEncodedUri(calendarId)}/events/${getEncodedUri(eventId)}/extensions`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);
@@ -4237,9 +4237,9 @@ public isolated client class Client {
     # + eventId - The unique identifier of event
     # + extensionId - The unique identifier of extension
     # + headers - Headers to be sent with the request 
-    # + payload - The users calendars events extensions properties to update 
-    # + return - The updated user calendar event extension 
-    remote isolated function updateUserCalendarEventExtension(string userId, string calendarId, string eventId, string extensionId, Extension payload, map<string|string[]> headers = {}) returns Extension|error {
+    # + payload - The open extension properties to change or add 
+    # + return - The updated open extension 
+    remote isolated function updateUserCalendarEventExtension(string userId, string calendarId, string eventId, string extensionId, OpenTypeExtension payload, map<string|string[]> headers = {}) returns OpenTypeExtension|error {
         string resourcePath = string `/users/${getEncodedUri(userId)}/calendars/${getEncodedUri(calendarId)}/events/${getEncodedUri(eventId)}/extensions/${getEncodedUri(extensionId)}`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);
@@ -4606,9 +4606,9 @@ public isolated client class Client {
     # + userId - The unique identifier of user
     # + eventId - The unique identifier of event
     # + headers - Headers to be sent with the request 
-    # + payload - The users events attachments to create 
-    # + return - The created users events attachments 
-    remote isolated function createUserEventAttachment(string userId, string eventId, Attachment payload, map<string|string[]> headers = {}) returns Attachment|error {
+    # + payload - The attachment to add: a `FileAttachment` (`name`, `contentBytes`) or an `ItemAttachment` (`name`, `item`) 
+    # + return - The created attachment 
+    remote isolated function createUserEventAttachment(string userId, string eventId, NewAttachment payload, map<string|string[]> headers = {}) returns Attachment|error {
         string resourcePath = string `/users/${getEncodedUri(userId)}/events/${getEncodedUri(eventId)}/attachments`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);
@@ -4705,9 +4705,9 @@ public isolated client class Client {
     # + userId - The unique identifier of user
     # + eventId - The unique identifier of event
     # + headers - Headers to be sent with the request 
-    # + payload - The users events extensions to create 
-    # + return - The created users events extensions 
-    remote isolated function createUserEventExtension(string userId, string eventId, Extension payload, map<string|string[]> headers = {}) returns Extension|error {
+    # + payload - The open extension to create: `extensionName` plus the custom properties 
+    # + return - The created open extension 
+    remote isolated function createUserEventExtension(string userId, string eventId, OpenTypeExtension payload, map<string|string[]> headers = {}) returns OpenTypeExtension|error {
         string resourcePath = string `/users/${getEncodedUri(userId)}/events/${getEncodedUri(eventId)}/extensions`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);
@@ -4749,9 +4749,9 @@ public isolated client class Client {
     # + eventId - The unique identifier of event
     # + extensionId - The unique identifier of extension
     # + headers - Headers to be sent with the request 
-    # + payload - The users events extensions properties to update 
-    # + return - The updated user event extension 
-    remote isolated function updateUserEventExtension(string userId, string eventId, string extensionId, Extension payload, map<string|string[]> headers = {}) returns Extension|error {
+    # + payload - The open extension properties to change or add 
+    # + return - The updated open extension 
+    remote isolated function updateUserEventExtension(string userId, string eventId, string extensionId, OpenTypeExtension payload, map<string|string[]> headers = {}) returns OpenTypeExtension|error {
         string resourcePath = string `/users/${getEncodedUri(userId)}/events/${getEncodedUri(eventId)}/extensions/${getEncodedUri(extensionId)}`;
         http:Request request = new;
         json jsonBody = jsondata:toJson(payload);

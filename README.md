@@ -81,6 +81,19 @@ To use the Microsoft Outlook Calendar connector, you need a Microsoft 365 or Out
 
 4. Store the `refresh_token` from the response securely. Use `https://login.microsoftonline.com/common/oauth2/v2.0/token` as the refresh URL. If the application is registered for your organization only, replace `common` with your tenant ID in both URLs.
 
+To call the `/users/{userId}` operations as the application instead, without a signed-in user, add the **Calendars.ReadWrite** permission under **Application permissions**, grant admin consent, and use the client credentials grant with your tenant's token URL. The `/me` operations always need a signed-in user.
+
+```ballerina
+final calendar:Client appClient = check new ({
+    auth: {
+        clientId,
+        clientSecret,
+        tokenUrl: "https://login.microsoftonline.com/<TENANT_ID>/oauth2/v2.0/token",
+        scopes: ["https://graph.microsoft.com/.default"]
+    }
+});
+```
+
 ## Quickstart
 
 To use the Microsoft Outlook Calendar connector in your Ballerina application, update your `.bal` file as follows.

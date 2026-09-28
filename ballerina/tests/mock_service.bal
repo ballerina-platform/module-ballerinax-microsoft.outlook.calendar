@@ -541,6 +541,7 @@ isolated function mockEvent(string id, string subject) returns Event => {
 };
 
 isolated function mockAttachment(string id, string name) returns Attachment => {
+    atOdataType: "#microsoft.graph.fileAttachment",
     id,
     name,
     contentType: "text/plain",

@@ -225,7 +225,7 @@ public type ListGroupCalendarsQueries record {
 @display {label: "Connection Config"}
 public type ConnectionConfig record {|
     # Configurations related to client authentication
-    http:BearerTokenConfig|OAuth2RefreshTokenGrantConfig auth;
+    OAuth2ClientCredentialsGrantConfig|http:BearerTokenConfig|OAuth2RefreshTokenGrantConfig auth;
     # The HTTP version understood by the client
     http:HttpVersion httpVersion = http:HTTP_2_0;
     # Configurations related to HTTP/1.x protocol
@@ -1092,6 +1092,13 @@ public type ListUserEventInstancesDeltaQueries record {
     string[] 'select?;
 };
 
+# OAuth2 Client Credentials Grant Configs
+public type OAuth2ClientCredentialsGrantConfig record {|
+    *http:OAuth2ClientCredentialsGrantConfig;
+    # Token URL of the tenant, `https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/token`
+    string tokenUrl;
+|};
+
 # Represents the Queries record for the operation: listEventsDelta
 public type ListEventsDeltaQueries record {
     # Skip the first n items
@@ -1144,6 +1151,20 @@ public type AcceptEventRequest record {
     boolean? sendResponse = false;
 };
 
+# A file (text file, Word document, image, ...) attached to an event. Send `name` and `contentBytes`; files of 3 MB or more go through an upload session instead
+public type FileAttachment record {
+    *Attachment;
+    # The base64-encoded contents of the file
+    string contentBytes;
+    # The ID of the attachment in the Exchange store
+    string? contentId?;
+    # Not supported. Do not use
+    string? contentLocation?;
+    # The OData type of a file attachment
+    @jsondata:Name {value: "@odata.type"}
+    string atOdataType = "#microsoft.graph.fileAttachment";
+};
+
 # Represents the Queries record for the operation: getCalendarEventExtension
 public type GetCalendarEventExtensionQueries record {
     # Expand related entities
@@ -1180,9 +1201,9 @@ public type Attachment record {
     string? lastModifiedDateTime?;
     # The length of the attachment in bytes
     decimal size?;
-    # The OData type annotation identifying the entity or complex type of the object
+    # The concrete attachment type. Required: `#microsoft.graph.fileAttachment`, `#microsoft.graph.itemAttachment` or `#microsoft.graph.referenceAttachment`
     @jsondata:Name {value: "@odata.type"}
-    string atOdataType?;
+    string atOdataType;
     # The attachment's file name
     string? name?;
     # true if the attachment is an inline attachment; otherwise, false
@@ -1814,8 +1835,8 @@ public type ListUserCalendarEventsDeltaQueries record {
 # OAuth2 Refresh Token Grant Configs
 public type OAuth2RefreshTokenGrantConfig record {|
     *http:OAuth2RefreshTokenGrantConfig;
-    # Refresh URL
-    string refreshUrl = "https://login.microsoftonline.com/common/oauth2/v2.0/token";
+    # Refresh URL: `https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/token` for a single-tenant app, or `.../common/oauth2/v2.0/token` for a multi-tenant one
+    string refreshUrl;
 |};
 
 # Represents the Queries record for the operation: listUserCalendars
@@ -1861,6 +1882,16 @@ public type DeleteDefaultEventExtensionHeaders record {
     # ETag of the resource; the request succeeds only if it matches the current version
     @http:Header {name: "If-Match"}
     string ifMatch?;
+};
+
+# An open extension: untyped custom properties stored on an event. Set `extensionName` and add the custom properties as extra fields
+public type OpenTypeExtension record {
+    *Extension;
+    # A unique text identifier for the open extension, such as `Com.Contoso.Referral`
+    string extensionName;
+    # The OData type of an open extension
+    @jsondata:Name {value: "@odata.type"}
+    string atOdataType = "#microsoft.graph.openTypeExtension";
 };
 
 # Represents the Headers record for the operation: deleteCalendarEvent
@@ -2016,9 +2047,9 @@ public type GetCalendarEventCalendarQueries record {
 
 public type Extension record {
     *Entity;
-    # The OData type annotation identifying the entity or complex type of the object
+    # The concrete extension type. Required: `#microsoft.graph.openTypeExtension` for an open extension
     @jsondata:Name {value: "@odata.type"}
-    string atOdataType?;
+    string atOdataType;
 };
 
 # Represents the Queries record for the operation: listUserEventsDelta
@@ -2984,6 +3015,15 @@ public type ListUserCalendarPermissionsQueries record {
     # Select properties to be returned
     @http:Query {name: "$select"}
     string[] 'select?;
+};
+
+# An event or message attached to an event. Send `name` and `item`, where `item` sets its own `@odata.type` (for example `#microsoft.graph.event`)
+public type ItemAttachment record {
+    *Attachment;
+    OutlookItem item;
+    # The OData type of an item attachment
+    @jsondata:Name {value: "@odata.type"}
+    string atOdataType = "#microsoft.graph.itemAttachment";
 };
 
 # Represents the Queries record for the operation: countCalendars
@@ -4028,6 +4068,9 @@ public type GetEventAttachmentQueries record {
     @http:Query {name: "$select"}
     string[] 'select?;
 };
+
+# An attachment to add to an event: a `FileAttachment` or an `ItemAttachment`
+public type NewAttachment FileAttachment|ItemAttachment;
 
 # Represents the Queries record for the operation: countCalendarEventExtensions
 public type CountCalendarEventExtensionsQueries record {

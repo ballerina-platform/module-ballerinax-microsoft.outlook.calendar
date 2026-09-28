@@ -13,6 +13,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   groups, calendar permissions, events, event attachments and open extensions, calendar views, recurring-event
   instances, delta queries, meeting responses, free/busy schedules and meeting-time suggestions, for both the
   signed-in user (`/me`) and a user by ID (`/users/{userId}`).
+- `FileAttachment`, `ItemAttachment`, `ReferenceAttachment` and `OpenTypeExtension` records. The `create*Attachment`
+  operations take a `NewAttachment` (`FileAttachment|ItemAttachment`), and the `create*Extension` and
+  `update*Extension` operations take and return an `OpenTypeExtension`. Each record sets its own `@odata.type`.
+- The client credentials grant (`OAuth2ClientCredentialsGrantConfig`), for calling the `/users/{userId}` operations
+  with application permissions.
 
 ### Changed
 
@@ -29,7 +34,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `updateCalendar` takes a `Calendar` payload instead of the separate `name`, `color` and `isDefaultCalendar`
   arguments.
 - `init` takes an optional `serviceUrl` (default `https://graph.microsoft.com/v1.0`), and the connection
-  configuration accepts either a bearer token or the refresh token grant.
+  configuration accepts a bearer token, the refresh token grant or the client credentials grant.
+- `refreshUrl` (refresh token grant) and `tokenUrl` (client credentials grant) are required and have no default.
+  The multi-tenant `https://login.microsoftonline.com/common/oauth2/v2.0/token` endpoint fails for an app registered
+  in a single tenant, and never works for the client credentials grant.
+- `@odata.type` (`atOdataType`) is required on `Attachment` and `Extension`, because Microsoft Graph rejects an
+  attachment or extension that does not name its concrete type. It is optional on every other record.
 - The minimum Ballerina distribution is now **2201.13.4** (Swan Lake Update 13).
 
 | 2.4.0 method | 3.0.0 method |

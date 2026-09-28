@@ -17,15 +17,19 @@ The trimming rules:
               Group calendars (/groups/{group-id}/calendar...) are out of scope.
   info        upstream info, with title/description replaced by the Calendar text
   tags        the upstream tag entries actually used by the selected operations
-  components  the transitive $ref closure of the selected paths, PLUS every
-              `examples` entry whose name matches a kept schema (the upstream
-              per-entity examples are not reachable by $ref)
+  components  the transitive $ref closure of the selected paths and of
+              EXTRA_SCHEMAS, PLUS every `examples` entry whose name matches a
+              kept schema (the upstream per-entity examples are not reachable
+              by $ref)
 
 The closure deliberately does NOT follow `discriminator.mapping` targets. Those
 mappings are name-to-schema hints, not $refs, and following them would drag in
 most of the upstream schemas. The `microsoft.graph.entity` schema therefore
 arrives with a mapping pointing at schemas that are not in the subset; it has to
 be dropped by hand once the operation trim has settled which schemas survive.
+The concrete subtypes a caller has to send are seeded explicitly instead
+(EXTRA_SCHEMAS): without them `attachment` and `extension` have no
+`contentBytes`, `item` or `extensionName` to write.
 
 Paths resolve relative to this file, so it can be run from anywhere. The source
 spec is cached beside the script and re-downloaded only when it is missing:
@@ -69,6 +73,15 @@ OWNER_PREFIXES = ("/me/", "/users/{user-id}/")
 # First segment under an owner that marks the Outlook calendar surface.
 CALENDAR_ROOTS = frozenset(
     ("calendar", "calendars", "calendarGroups", "calendarView", "events", "findMeetingTimes")
+)
+
+# Concrete subtypes reachable only through a discriminator mapping. Graph rejects
+# an attachment or extension whose `@odata.type` does not name one of these.
+EXTRA_SCHEMAS = (
+    "microsoft.graph.fileAttachment",
+    "microsoft.graph.itemAttachment",
+    "microsoft.graph.referenceAttachment",
+    "microsoft.graph.openTypeExtension",
 )
 
 TITLE = "Microsoft Outlook Calendar API"
@@ -230,7 +243,8 @@ def build_output(source_doc: dict) -> dict:
         raise SystemExit("No calendar paths matched — is the source spec correct?")
 
     components = source_doc.get("components") or {}
-    kept = walk_ref_closure(selected_paths, components)
+    seeds = [{"$ref": f"{REF_PREFIX}schemas/{name}"} for name in EXTRA_SCHEMAS]
+    kept = walk_ref_closure([selected_paths, seeds], components)
     add_entity_examples(kept, components)
     pruned_components = subset_components(components, kept)
 

@@ -811,15 +811,16 @@ paths:
       summary: Add an attachment to an event in the signed-in user's default calendar
       operationId: createDefaultEventAttachment
       requestBody:
-        description: The me calendar events attachments to create
+        description: 'The attachment to add: a `FileAttachment` (`name`, `contentBytes`) or an `ItemAttachment`
+          (`name`, `item`)'
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Attachment'
+              $ref: '#/components/schemas/NewAttachment'
         required: true
       responses:
         2XX:
-          description: The created me calendar events attachments
+          description: The created attachment
           content:
             application/json:
               schema:
@@ -1147,19 +1148,19 @@ paths:
       summary: Create an open extension on an event in the signed-in user's default calendar
       operationId: createDefaultEventExtension
       requestBody:
-        description: The me calendar events extensions to create
+        description: 'The open extension to create: `extensionName` plus the custom properties'
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Extension'
+              $ref: '#/components/schemas/OpenTypeExtension'
         required: true
       responses:
         2XX:
-          description: The created me calendar events extensions
+          description: The created open extension
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Extension'
+                $ref: '#/components/schemas/OpenTypeExtension'
         4XX:
           $ref: '#/components/responses/error'
         5XX:
@@ -1253,19 +1254,19 @@ paths:
       summary: Update an open extension of an event in the signed-in user's default calendar
       operationId: updateDefaultEventExtension
       requestBody:
-        description: The me calendar events extensions properties to update
+        description: The open extension properties to change or add
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Extension'
+              $ref: '#/components/schemas/OpenTypeExtension'
         required: true
       responses:
         2XX:
-          description: The updated default event extension
+          description: The updated open extension
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Extension'
+                $ref: '#/components/schemas/OpenTypeExtension'
         4XX:
           $ref: '#/components/responses/error'
         5XX:
@@ -3382,15 +3383,16 @@ paths:
       summary: Add an attachment to an event in a calendar of a calendar group of the signed-in user
       operationId: createGroupEventAttachment
       requestBody:
-        description: The calendar groups calendars events attachments to create
+        description: 'The attachment to add: a `FileAttachment` (`name`, `contentBytes`) or an `ItemAttachment`
+          (`name`, `item`)'
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Attachment'
+              $ref: '#/components/schemas/NewAttachment'
         required: true
       responses:
         2XX:
-          description: The created calendar groups calendars events attachments
+          description: The created attachment
           content:
             application/json:
               schema:
@@ -3811,19 +3813,19 @@ paths:
         user
       operationId: createGroupEventExtension
       requestBody:
-        description: The calendar groups calendars events extensions to create
+        description: 'The open extension to create: `extensionName` plus the custom properties'
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Extension'
+              $ref: '#/components/schemas/OpenTypeExtension'
         required: true
       responses:
         2XX:
-          description: The created calendar groups calendars events extensions
+          description: The created open extension
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Extension'
+                $ref: '#/components/schemas/OpenTypeExtension'
         4XX:
           $ref: '#/components/responses/error'
         5XX:
@@ -3937,19 +3939,19 @@ paths:
         user
       operationId: updateGroupEventExtension
       requestBody:
-        description: The calendar groups calendars events extensions properties to update
+        description: The open extension properties to change or add
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Extension'
+              $ref: '#/components/schemas/OpenTypeExtension'
         required: true
       responses:
         2XX:
-          description: The updated group event extension
+          description: The updated open extension
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Extension'
+                $ref: '#/components/schemas/OpenTypeExtension'
         4XX:
           $ref: '#/components/responses/error'
         5XX:
@@ -6141,15 +6143,16 @@ paths:
       summary: Add an attachment to an event in a calendar of the signed-in user
       operationId: createCalendarEventAttachment
       requestBody:
-        description: The me calendars events attachments to create
+        description: 'The attachment to add: a `FileAttachment` (`name`, `contentBytes`) or an `ItemAttachment`
+          (`name`, `item`)'
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Attachment'
+              $ref: '#/components/schemas/NewAttachment'
         required: true
       responses:
         2XX:
-          description: The created me calendars events attachments
+          description: The created attachment
           content:
             application/json:
               schema:
@@ -6522,19 +6525,19 @@ paths:
       summary: Create an open extension on an event in a calendar of the signed-in user
       operationId: createCalendarEventExtension
       requestBody:
-        description: The me calendars events extensions to create
+        description: 'The open extension to create: `extensionName` plus the custom properties'
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Extension'
+              $ref: '#/components/schemas/OpenTypeExtension'
         required: true
       responses:
         2XX:
-          description: The created me calendars events extensions
+          description: The created open extension
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Extension'
+                $ref: '#/components/schemas/OpenTypeExtension'
         4XX:
           $ref: '#/components/responses/error'
         5XX:
@@ -6637,19 +6640,19 @@ paths:
       summary: Update an open extension of an event in a calendar of the signed-in user
       operationId: updateCalendarEventExtension
       requestBody:
-        description: The me calendars events extensions properties to update
+        description: The open extension properties to change or add
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Extension'
+              $ref: '#/components/schemas/OpenTypeExtension'
         required: true
       responses:
         2XX:
-          description: The updated calendar event extension
+          description: The updated open extension
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Extension'
+                $ref: '#/components/schemas/OpenTypeExtension'
         4XX:
           $ref: '#/components/responses/error'
         5XX:
@@ -8205,15 +8208,16 @@ paths:
         url: https://learn.microsoft.com/graph/api/event-post-attachments?view=graph-rest-1.0
       operationId: createEventAttachment
       requestBody:
-        description: The me events attachments to create
+        description: 'The attachment to add: a `FileAttachment` (`name`, `contentBytes`) or an `ItemAttachment`
+          (`name`, `item`)'
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Attachment'
+              $ref: '#/components/schemas/NewAttachment'
         required: true
       responses:
         2XX:
-          description: The created me events attachments
+          description: The created attachment
           content:
             application/json:
               schema:
@@ -8544,19 +8548,19 @@ paths:
       summary: Create an open extension on an event of the signed-in user
       operationId: createEventExtension
       requestBody:
-        description: The me events extensions to create
+        description: 'The open extension to create: `extensionName` plus the custom properties'
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Extension'
+              $ref: '#/components/schemas/OpenTypeExtension'
         required: true
       responses:
         2XX:
-          description: The created me events extensions
+          description: The created open extension
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Extension'
+                $ref: '#/components/schemas/OpenTypeExtension'
         4XX:
           $ref: '#/components/responses/error'
         5XX:
@@ -8650,19 +8654,19 @@ paths:
       summary: Update an open extension of an event of the signed-in user
       operationId: updateEventExtension
       requestBody:
-        description: The me events extensions properties to update
+        description: The open extension properties to change or add
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Extension'
+              $ref: '#/components/schemas/OpenTypeExtension'
         required: true
       responses:
         2XX:
-          description: The updated event extension
+          description: The updated open extension
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Extension'
+                $ref: '#/components/schemas/OpenTypeExtension'
         4XX:
           $ref: '#/components/responses/error'
         5XX:
@@ -10310,15 +10314,16 @@ paths:
       summary: Add an attachment to an event in a user's default calendar
       operationId: createUserDefaultEventAttachment
       requestBody:
-        description: The users calendar events attachments to create
+        description: 'The attachment to add: a `FileAttachment` (`name`, `contentBytes`) or an `ItemAttachment`
+          (`name`, `item`)'
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Attachment'
+              $ref: '#/components/schemas/NewAttachment'
         required: true
       responses:
         2XX:
-          description: The created users calendar events attachments
+          description: The created attachment
           content:
             application/json:
               schema:
@@ -10690,19 +10695,19 @@ paths:
       summary: Create an open extension on an event in a user's default calendar
       operationId: createUserDefaultEventExtension
       requestBody:
-        description: The users calendar events extensions to create
+        description: 'The open extension to create: `extensionName` plus the custom properties'
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Extension'
+              $ref: '#/components/schemas/OpenTypeExtension'
         required: true
       responses:
         2XX:
-          description: The created users calendar events extensions
+          description: The created open extension
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Extension'
+                $ref: '#/components/schemas/OpenTypeExtension'
         4XX:
           $ref: '#/components/responses/error'
         5XX:
@@ -10805,19 +10810,19 @@ paths:
       summary: Update an open extension of an event in a user's default calendar
       operationId: updateUserDefaultEventExtension
       requestBody:
-        description: The users calendar events extensions properties to update
+        description: The open extension properties to change or add
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Extension'
+              $ref: '#/components/schemas/OpenTypeExtension'
         required: true
       responses:
         2XX:
-          description: The updated user default event extension
+          description: The updated open extension
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Extension'
+                $ref: '#/components/schemas/OpenTypeExtension'
         4XX:
           $ref: '#/components/responses/error'
         5XX:
@@ -13170,15 +13175,16 @@ paths:
       summary: Add an attachment to an event in a calendar of a calendar group of a user
       operationId: createUserGroupEventAttachment
       requestBody:
-        description: The calendar groups calendars events attachments to create
+        description: 'The attachment to add: a `FileAttachment` (`name`, `contentBytes`) or an `ItemAttachment`
+          (`name`, `item`)'
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Attachment'
+              $ref: '#/components/schemas/NewAttachment'
         required: true
       responses:
         2XX:
-          description: The created calendar groups calendars events attachments
+          description: The created attachment
           content:
             application/json:
               schema:
@@ -13641,19 +13647,19 @@ paths:
       summary: Create an open extension on an event in a calendar of a calendar group of a user
       operationId: createUserGroupEventExtension
       requestBody:
-        description: The calendar groups calendars events extensions to create
+        description: 'The open extension to create: `extensionName` plus the custom properties'
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Extension'
+              $ref: '#/components/schemas/OpenTypeExtension'
         required: true
       responses:
         2XX:
-          description: The created calendar groups calendars events extensions
+          description: The created open extension
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Extension'
+                $ref: '#/components/schemas/OpenTypeExtension'
         4XX:
           $ref: '#/components/responses/error'
         5XX:
@@ -13774,19 +13780,19 @@ paths:
       summary: Update an open extension of an event in a calendar of a calendar group of a user
       operationId: updateUserGroupEventExtension
       requestBody:
-        description: The calendar groups calendars events extensions properties to update
+        description: The open extension properties to change or add
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Extension'
+              $ref: '#/components/schemas/OpenTypeExtension'
         required: true
       responses:
         2XX:
-          description: The updated user group event extension
+          description: The updated open extension
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Extension'
+                $ref: '#/components/schemas/OpenTypeExtension'
         4XX:
           $ref: '#/components/responses/error'
         5XX:
@@ -16218,15 +16224,16 @@ paths:
       summary: Add an attachment to an event in a calendar of a user
       operationId: createUserCalendarEventAttachment
       requestBody:
-        description: The users calendars events attachments to create
+        description: 'The attachment to add: a `FileAttachment` (`name`, `contentBytes`) or an `ItemAttachment`
+          (`name`, `item`)'
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Attachment'
+              $ref: '#/components/schemas/NewAttachment'
         required: true
       responses:
         2XX:
-          description: The created users calendars events attachments
+          description: The created attachment
           content:
             application/json:
               schema:
@@ -16643,19 +16650,19 @@ paths:
       summary: Create an open extension on an event in a calendar of a user
       operationId: createUserCalendarEventExtension
       requestBody:
-        description: The users calendars events extensions to create
+        description: 'The open extension to create: `extensionName` plus the custom properties'
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Extension'
+              $ref: '#/components/schemas/OpenTypeExtension'
         required: true
       responses:
         2XX:
-          description: The created users calendars events extensions
+          description: The created open extension
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Extension'
+                $ref: '#/components/schemas/OpenTypeExtension'
         4XX:
           $ref: '#/components/responses/error'
         5XX:
@@ -16767,19 +16774,19 @@ paths:
       summary: Update an open extension of an event in a calendar of a user
       operationId: updateUserCalendarEventExtension
       requestBody:
-        description: The users calendars events extensions properties to update
+        description: The open extension properties to change or add
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Extension'
+              $ref: '#/components/schemas/OpenTypeExtension'
         required: true
       responses:
         2XX:
-          description: The updated user calendar event extension
+          description: The updated open extension
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Extension'
+                $ref: '#/components/schemas/OpenTypeExtension'
         4XX:
           $ref: '#/components/responses/error'
         5XX:
@@ -18505,15 +18512,16 @@ paths:
       summary: Add an attachment to an event of a user
       operationId: createUserEventAttachment
       requestBody:
-        description: The users events attachments to create
+        description: 'The attachment to add: a `FileAttachment` (`name`, `contentBytes`) or an `ItemAttachment`
+          (`name`, `item`)'
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Attachment'
+              $ref: '#/components/schemas/NewAttachment'
         required: true
       responses:
         2XX:
-          description: The created users events attachments
+          description: The created attachment
           content:
             application/json:
               schema:
@@ -18885,19 +18893,19 @@ paths:
       summary: Create an open extension on an event of a user
       operationId: createUserEventExtension
       requestBody:
-        description: The users events extensions to create
+        description: 'The open extension to create: `extensionName` plus the custom properties'
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Extension'
+              $ref: '#/components/schemas/OpenTypeExtension'
         required: true
       responses:
         2XX:
-          description: The created users events extensions
+          description: The created open extension
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Extension'
+                $ref: '#/components/schemas/OpenTypeExtension'
         4XX:
           $ref: '#/components/responses/error'
         5XX:
@@ -19000,19 +19008,19 @@ paths:
       summary: Update an open extension of an event of a user
       operationId: updateUserEventExtension
       requestBody:
-        description: The users events extensions properties to update
+        description: The open extension properties to change or add
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Extension'
+              $ref: '#/components/schemas/OpenTypeExtension'
         required: true
       responses:
         2XX:
-          description: The updated user event extension
+          description: The updated open extension
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Extension'
+                $ref: '#/components/schemas/OpenTypeExtension'
         4XX:
           $ref: '#/components/responses/error'
         5XX:
@@ -21615,7 +21623,11 @@ components:
           '@odata.type':
             type: string
             x-ballerina-name: atOdataType
-            description: The OData type annotation identifying the entity or complex type of the object
+            description: 'The concrete extension type. Required: `#microsoft.graph.openTypeExtension`
+              for an open extension'
+        required:
+        - '@odata.type'
+        x-ballerina-odata-type-required: true
     ReferenceNumeric:
       type: string
       nullable: true
@@ -21793,7 +21805,8 @@ components:
           '@odata.type':
             type: string
             x-ballerina-name: atOdataType
-            description: The OData type annotation identifying the entity or complex type of the object
+            description: 'The concrete attachment type. Required: `#microsoft.graph.fileAttachment`, `#microsoft.graph.itemAttachment`
+              or `#microsoft.graph.referenceAttachment`'
           name:
             type: string
             description: The attachment's file name
@@ -21805,6 +21818,9 @@ components:
             type: string
             description: The MIME type
             nullable: true
+        required:
+        - '@odata.type'
+        x-ballerina-odata-type-required: true
     CalendarPermission:
       allOf:
       - $ref: '#/components/schemas/Entity'
@@ -22027,6 +22043,85 @@ components:
           - $ref: '#/components/schemas/ReferenceNumeric'
           description: Minimum confidence required for a time slot to be returned, from 0 to 100
       description: Request body for finding meeting time suggestions
+    FileAttachment:
+      allOf:
+      - $ref: '#/components/schemas/Attachment'
+      - title: fileAttachment
+        type: object
+        required:
+        - contentBytes
+        properties:
+          contentBytes:
+            type: string
+            description: The base64-encoded contents of the file
+          contentId:
+            type: string
+            nullable: true
+            description: The ID of the attachment in the Exchange store
+          contentLocation:
+            type: string
+            nullable: true
+            description: Not supported. Do not use
+          '@odata.type':
+            type: string
+            default: '#microsoft.graph.fileAttachment'
+            x-ballerina-name: atOdataType
+            description: The OData type of a file attachment
+      description: A file (text file, Word document, image, ...) attached to an event. Send `name` and
+        `contentBytes`; files of 3 MB or more go through an upload session instead
+    ItemAttachment:
+      allOf:
+      - $ref: '#/components/schemas/Attachment'
+      - title: itemAttachment
+        type: object
+        required:
+        - item
+        properties:
+          item:
+            $ref: '#/components/schemas/OutlookItem'
+          '@odata.type':
+            type: string
+            default: '#microsoft.graph.itemAttachment'
+            x-ballerina-name: atOdataType
+            description: The OData type of an item attachment
+      description: An event or message attached to an event. Send `name` and `item`, where `item` sets
+        its own `@odata.type` (for example `#microsoft.graph.event`)
+    ReferenceAttachment:
+      allOf:
+      - $ref: '#/components/schemas/Attachment'
+      - title: referenceAttachment
+        type: object
+        properties:
+          '@odata.type':
+            type: string
+            default: '#microsoft.graph.referenceAttachment'
+            x-ballerina-name: atOdataType
+            description: The OData type of a reference attachment
+      description: A link to a file on OneDrive or another supported location, attached to an event. Returned
+        when reading attachments; Microsoft Graph v1.0 does not create reference attachments on events
+    OpenTypeExtension:
+      allOf:
+      - $ref: '#/components/schemas/Extension'
+      - title: openTypeExtension
+        type: object
+        required:
+        - extensionName
+        properties:
+          extensionName:
+            type: string
+            description: A unique text identifier for the open extension, such as `Com.Contoso.Referral`
+          '@odata.type':
+            type: string
+            default: '#microsoft.graph.openTypeExtension'
+            x-ballerina-name: atOdataType
+            description: The OData type of an open extension
+      description: 'An open extension: untyped custom properties stored on an event. Set `extensionName`
+        and add the custom properties as extra fields'
+    NewAttachment:
+      oneOf:
+      - $ref: '#/components/schemas/FileAttachment'
+      - $ref: '#/components/schemas/ItemAttachment'
+      description: 'An attachment to add to an event: a `FileAttachment` or an `ItemAttachment`'
   responses:
     error:
       description: error
@@ -22489,7 +22584,9 @@ components:
   securitySchemes:
     oAuth2:
       type: oauth2
-      description: Microsoft identity platform OAuth 2.0 authorization code flow (delegated permissions).
+      description: Microsoft identity platform OAuth 2.0. The authorization code flow acts for a signed-in
+        user (delegated permissions); the client credentials flow acts as the application (application
+        permissions, `/users/{userId}` paths only).
       flows:
         authorizationCode:
           authorizationUrl: https://login.microsoftonline.com/common/oauth2/v2.0/authorize
@@ -22503,3 +22600,8 @@ components:
             Calendars.ReadWrite.Shared: Read and write the calendars the signed-in user can access, including
               shared calendars
             offline_access: Maintain access to data you have given it access to
+        clientCredentials:
+          tokenUrl: https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token
+          scopes:
+            https://graph.microsoft.com/.default: The application permissions granted to the app registration,
+              such as Calendars.ReadWrite

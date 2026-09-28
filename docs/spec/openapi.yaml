@@ -20473,6 +20473,50 @@ components:
           propertyName: '@odata.type'
           mapping:
             '#microsoft.graph.openTypeExtension': '#/components/schemas/microsoft.graph.openTypeExtension'
+    microsoft.graph.fileAttachment:
+      allOf:
+      - $ref: '#/components/schemas/microsoft.graph.attachment'
+      - title: fileAttachment
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          contentBytes:
+            type: string
+            description: The base64-encoded contents of the file.
+            format: base64url
+            nullable: true
+          contentId:
+            type: string
+            description: The ID of the attachment in the Exchange store.
+            nullable: true
+          contentLocation:
+            type: string
+            description: Don't use this property as it isn't supported.
+            nullable: true
+          '@odata.type':
+            type: string
+            default: '#microsoft.graph.fileAttachment'
+      x-ms-discriminator-value: '#microsoft.graph.fileAttachment'
+    microsoft.graph.itemAttachment:
+      allOf:
+      - $ref: '#/components/schemas/microsoft.graph.attachment'
+      - title: itemAttachment
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          item:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.outlookItem'
+            - type: object
+              nullable: true
+            description: The attached message or event. Navigation property.
+            x-ms-navigationProperty: true
+          '@odata.type':
+            type: string
+            default: '#microsoft.graph.itemAttachment'
+      x-ms-discriminator-value: '#microsoft.graph.itemAttachment'
     microsoft.graph.multiValueLegacyExtendedProperty:
       allOf:
       - $ref: '#/components/schemas/microsoft.graph.entity'
@@ -20490,6 +20534,21 @@ components:
           '@odata.type':
             type: string
       x-ms-discriminator-value: '#microsoft.graph.multiValueLegacyExtendedProperty'
+    microsoft.graph.openTypeExtension:
+      allOf:
+      - $ref: '#/components/schemas/microsoft.graph.extension'
+      - title: openTypeExtension
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          extensionName:
+            type: string
+            description: A unique text identifier for an open type data extension. Optional.
+          '@odata.type':
+            type: string
+            default: '#microsoft.graph.openTypeExtension'
+      x-ms-discriminator-value: '#microsoft.graph.openTypeExtension'
     microsoft.graph.outlookItem:
       allOf:
       - $ref: '#/components/schemas/microsoft.graph.entity'
@@ -20538,6 +20597,18 @@ components:
             '#microsoft.graph.eventMessageResponse': '#/components/schemas/microsoft.graph.eventMessageResponse'
             '#microsoft.graph.note': '#/components/schemas/microsoft.graph.note'
             '#microsoft.graph.post': '#/components/schemas/microsoft.graph.post'
+    microsoft.graph.referenceAttachment:
+      allOf:
+      - $ref: '#/components/schemas/microsoft.graph.attachment'
+      - title: referenceAttachment
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          '@odata.type':
+            type: string
+            default: '#microsoft.graph.referenceAttachment'
+      x-ms-discriminator-value: '#microsoft.graph.referenceAttachment'
     microsoft.graph.singleValueLegacyExtendedProperty:
       allOf:
       - $ref: '#/components/schemas/microsoft.graph.entity'
@@ -21956,10 +22027,22 @@ components:
         webLink: String
     microsoft.graph.extension:
       value: {}
+    microsoft.graph.fileAttachment:
+      value:
+        contentBytes: AA==
+        contentId: String
+        contentLocation: String
+    microsoft.graph.itemAttachment:
+      value:
+        item:
+          '@odata.type': microsoft.graph.outlookItem
     microsoft.graph.multiValueLegacyExtendedProperty:
       value:
         value:
         - String
+    microsoft.graph.openTypeExtension:
+      value:
+        extensionName: String
     microsoft.graph.outlookItem:
       value:
         categories:
@@ -21967,6 +22050,8 @@ components:
         changeKey: String
         createdDateTime: '0001-01-01T00:00:00.0000000+00:00'
         lastModifiedDateTime: '0001-01-01T00:00:00.0000000+00:00'
+    microsoft.graph.referenceAttachment:
+      value: {}
     microsoft.graph.singleValueLegacyExtendedProperty:
       value:
         value: String
@@ -22223,7 +22308,7 @@ components:
   securitySchemes:
     oAuth2:
       type: oauth2
-      description: Microsoft identity platform OAuth 2.0 authorization code flow (delegated permissions).
+      description: Microsoft identity platform OAuth 2.0. The authorization code flow acts for a signed-in user (delegated permissions); the client credentials flow acts as the application (application permissions, `/users/{user-id}` paths only).
       flows:
         authorizationCode:
           authorizationUrl: https://login.microsoftonline.com/common/oauth2/v2.0/authorize
@@ -22235,3 +22320,7 @@ components:
             Calendars.Read.Shared: Read the calendars the signed-in user can access, including shared calendars
             Calendars.ReadWrite.Shared: Read and write the calendars the signed-in user can access, including shared calendars
             offline_access: Maintain access to data you have given it access to
+        clientCredentials:
+          tokenUrl: https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token
+          scopes:
+            https://graph.microsoft.com/.default: The application permissions granted to the app registration, such as Calendars.ReadWrite
