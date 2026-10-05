@@ -1,8 +1,15 @@
 Connects to Microsoft Outlook Calendar from Ballerina
 
-## Package overview
+## Overview
 The `Microsoft Outlook Calendar` is a [Ballerina](https://ballerina.io/) connector for Outlook Calendar.
 This package provides the capability to create appointments, create events, organize meetings, manage a user's calendar, etc.
+
+### Key Features
+- Create, retrieve, update, and delete calendar events
+- Create, retrieve, update, and delete calendars
+- Create appointments and organize meetings
+- List events and calendars of a user
+- Connect to the Microsoft Graph Outlook Calendar API v1.0
 
 ### Compatibility
 |                                 | Version                         |
