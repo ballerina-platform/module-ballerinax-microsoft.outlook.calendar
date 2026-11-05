@@ -1,6 +1,6 @@
-// Copyright (c) 2021 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+// Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com).
 //
-// WSO2 Inc. licenses this file to you under the Apache License,
+// WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
 // in compliance with the License.
 // You may obtain a copy of the License at
@@ -14,384 +14,315 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/io;
-import ballerina/log;
-import ballerina/test;
+import ballerina/http;
 import ballerina/os;
+import ballerina/test;
 
-configurable string refreshUrl = os:getEnv("REFRESH_URL");
-configurable string refreshToken = os:getEnv("REFRESH_TOKEN");
-configurable string clientId = os:getEnv("CLIENT_ID");
-configurable string clientSecret = os:getEnv("CLIENT_SECRET");
+final boolean isLiveServer = os:getEnv("IS_LIVE_SERVER") == "true";
+final string serviceUrl = isLiveServer ? "https://graph.microsoft.com/v1.0" : "http://localhost:9090";
 
-ConnectionConfig configuration = {
-    auth: {
-        refreshUrl: refreshUrl,
-        refreshToken: refreshToken,
-        clientId: clientId,
-        clientSecret: clientSecret
+final string clientId = isLiveServer ? os:getEnv("OUTLOOK_CLIENT_ID") : "test-client-id";
+final string clientSecret = isLiveServer ? os:getEnv("OUTLOOK_CLIENT_SECRET") : "test-client-secret";
+final string refreshToken = isLiveServer ? os:getEnv("OUTLOOK_REFRESH_TOKEN") : "test-refresh-token";
+final string userId = isLiveServer ? os:getEnv("OUTLOOK_USER_ID") : "megan@contoso.com";
+final string attendeeEmail = isLiveServer ? os:getEnv("OUTLOOK_ATTENDEE_EMAIL") : "alex@contoso.com";
+
+final Client calendarClient = check initClient();
+
+isolated function initClient() returns Client|error {
+    if isLiveServer {
+        return new ({
+            auth: {
+                clientId,
+                clientSecret,
+                refreshToken,
+                refreshUrl: "https://login.microsoftonline.com/common/oauth2/v2.0/token"
+            }
+        }, serviceUrl);
     }
+    // The mock listener is plain HTTP; HTTP/2 upgrade on PATCH bodies would time out against it.
+    return new ({auth: {token: "test-token"}, httpVersion: http:HTTP_1_1}, serviceUrl);
+}
+
+isolated function eventPayload(string subject) returns Event => {
+    subject,
+    body: <ItemBody>{contentType: "text", content: "Created by the Ballerina connector test suite."},
+    'start: <DateTimeTimeZone>{dateTime: "2026-10-01T09:00:00", timeZone: "UTC"},
+    end: <DateTimeTimeZone>{dateTime: "2026-10-01T10:00:00", timeZone: "UTC"},
+    attendees: [
+        {
+            'type: "required",
+            emailAddress: <EmailAddress>{address: attendeeEmail}
+        }
+    ]
 };
 
-Client calendarClient = check new (configuration);
+isolated function idOf(string? id) returns string|error {
+    if id is () {
+        return error("expected the created entity to carry an id");
+    }
+    return id;
+}
 
-string eventId = "";
-string calendarId = "";
-string queryParamSelect = "$select=subject";
-string queryParamTop = "$top=5";
-string queryParamCount = "$count=true";
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testListEvents() returns error? {
+    EventCollection response = check calendarClient->listEvents(top = 5);
+    test:assertTrue((response.value ?: []).length() > 0);
+}
 
-@test:BeforeSuite
-function afterSuiteCreateEventandCalendar() {
-    log:printInfo("client->testCreateEvent()");
-    EventMetadata eventMetadata = {
-        subject: "Test-Subject",
-        body: {
-            content: "Test-Body"
-        },
-        'start: {
-            dateTime: "2021-07-16T12:00:00",
-            timeZone: TIMEZONE_LK
-        },
-        end: {
-            dateTime: "2021-07-16T14:00:00",
-            timeZone: TIMEZONE_LK
-        },
-        location: {
-            displayName: "Harry's Bar"
-        },
-        attendees: [
-            {
-                emailAddress: {
-                    address: "samanthab@contoso.onmicrosoft.com",
-                    name: "Samantha Booth"
-                },
-                'type: ATTENDEE_TYPE_REQUIRED,
-                status: {
-                    response: RESPONSE_NOT_RESPONDED
-                }
-            }
-        ],
-        allowNewTimeProposals: true
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testCreateEvent() returns error? {
+    Event response = check calendarClient->createEvent(eventPayload("Connector test: create event"));
+    test:assertTrue(response?.id !is ());
+    test:assertEquals(response?.subject, "Connector test: create event");
+}
+
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testGetEvent() returns error? {
+    Event created = check calendarClient->createEvent(eventPayload("Connector test: get event"));
+    string eventId = check idOf(created.id);
+    Event response = check calendarClient->getEvent(eventId);
+    test:assertEquals(response?.id, eventId);
+    test:assertTrue(response?.subject !is ());
+}
+
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testUpdateEvent() returns error? {
+    Event created = check calendarClient->createEvent(eventPayload("Connector test: update event"));
+    string eventId = check idOf(created.id);
+    Event response = check calendarClient->updateEvent(eventId, {subject: "Connector test: updated event"});
+    test:assertEquals(response?.subject, "Connector test: updated event");
+}
+
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testDeleteEvent() returns error? {
+    Event created = check calendarClient->createEvent(eventPayload("Connector test: delete event"));
+    string eventId = check idOf(created.id);
+    error? response = calendarClient->deleteEvent(eventId);
+    test:assertTrue(response is ());
+}
+
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testListCalendars() returns error? {
+    CalendarCollection response = check calendarClient->listCalendars();
+    test:assertTrue((response.value ?: []).length() > 0);
+}
+
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testCreateCalendar() returns error? {
+    Calendar response = check calendarClient->createCalendar({name: "Connector test calendar"});
+    test:assertTrue(response?.id !is ());
+    test:assertEquals(response?.name, "Connector test calendar");
+}
+
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testGetCalendar() returns error? {
+    Calendar created = check calendarClient->createCalendar({name: "Connector test: get calendar"});
+    string calendarId = check idOf(created.id);
+    Calendar response = check calendarClient->getCalendar(calendarId);
+    test:assertEquals(response?.id, calendarId);
+}
+
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testUpdateCalendar() returns error? {
+    Calendar created = check calendarClient->createCalendar({name: "Connector test: update calendar"});
+    string calendarId = check idOf(created.id);
+    Calendar response = check calendarClient->updateCalendar(calendarId, {name: "Connector test: renamed calendar"});
+    test:assertEquals(response?.name, "Connector test: renamed calendar");
+}
+
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testDeleteCalendar() returns error? {
+    Calendar created = check calendarClient->createCalendar({name: "Connector test: delete calendar"});
+    string calendarId = check idOf(created.id);
+    error? response = calendarClient->deleteCalendar(calendarId);
+    test:assertTrue(response is ());
+}
+
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testGetDefaultCalendar() returns error? {
+    Calendar response = check calendarClient->getDefaultCalendar();
+    test:assertTrue(response?.id !is ());
+    test:assertEquals(response?.isDefaultCalendar, true);
+}
+
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testListCalendarView() returns error? {
+    EventCollection response = check calendarClient->listCalendarView(
+        startDateTime = "2026-10-01T00:00:00Z", endDateTime = "2026-10-02T00:00:00Z");
+    test:assertTrue(response.value !is ());
+}
+
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testListCalendarEvents() returns error? {
+    Calendar calendar = check calendarClient->createCalendar({name: "Connector test: calendar events"});
+    string calendarId = check idOf(calendar.id);
+    _ = check calendarClient->createCalendarEvent(calendarId, eventPayload("Connector test: calendar event"));
+    EventCollection response = check calendarClient->listCalendarEvents(calendarId);
+    test:assertTrue((response.value ?: []).length() > 0);
+}
+
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testCreateCalendarEvent() returns error? {
+    Calendar calendar = check calendarClient->createCalendar({name: "Connector test: create calendar event"});
+    string calendarId = check idOf(calendar.id);
+    Event response = check calendarClient->createCalendarEvent(calendarId,
+        eventPayload("Connector test: event in a calendar"));
+    test:assertTrue(response?.id !is ());
+}
+
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testListCalendarGroups() returns error? {
+    CalendarGroupCollection response = check calendarClient->listCalendarGroups();
+    test:assertTrue((response.value ?: []).length() > 0);
+}
+
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testCreateCalendarGroup() returns error? {
+    CalendarGroup response = check calendarClient->createCalendarGroup({name: "Connector test group"});
+    test:assertTrue(response?.id !is ());
+    test:assertEquals(response?.name, "Connector test group");
+}
+
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testGetCalendarGroup() returns error? {
+    CalendarGroup created = check calendarClient->createCalendarGroup({name: "Connector test: get group"});
+    string groupId = check idOf(created.id);
+    CalendarGroup response = check calendarClient->getCalendarGroup(groupId);
+    test:assertEquals(response?.id, groupId);
+}
+
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testDeleteCalendarGroup() returns error? {
+    CalendarGroup created = check calendarClient->createCalendarGroup({name: "Connector test: delete group"});
+    string groupId = check idOf(created.id);
+    error? response = calendarClient->deleteCalendarGroup(groupId);
+    test:assertTrue(response is ());
+}
+
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testListGroupCalendars() returns error? {
+    CalendarGroupCollection groups = check calendarClient->listCalendarGroups();
+    CalendarGroup[] values = groups.value ?: [];
+    test:assertTrue(values.length() > 0);
+    string groupId = check idOf(values[0].id);
+    CalendarCollection response = check calendarClient->listGroupCalendars(groupId);
+    test:assertTrue(response.value !is ());
+}
+
+// Responding to an invitation needs an event organised by someone else, which a fresh
+// live tenant does not have, so the response actions run against the mock only.
+@test:Config {groups: ["mock_tests"]}
+isolated function testAcceptEvent() returns error? {
+    error? response = calendarClient->acceptEvent("AAMkAGI2THVSAAA=", {comment: "See you there", sendResponse: true});
+    test:assertTrue(response is ());
+}
+
+@test:Config {groups: ["mock_tests"]}
+isolated function testDeclineEvent() returns error? {
+    error? response = calendarClient->declineEvent("AAMkAGI2THVSAAA=", {
+        comment: "Could we move this to the afternoon?",
+        sendResponse: true,
+        proposedNewTime: <TimeSlot>{
+            'start: {dateTime: "2026-10-01T14:00:00", timeZone: "UTC"},
+            end: {dateTime: "2026-10-01T15:00:00", timeZone: "UTC"}
+        }
+    });
+    test:assertTrue(response is ());
+}
+
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testCancelEvent() returns error? {
+    Event created = check calendarClient->createEvent(eventPayload("Connector test: cancel meeting"));
+    string eventId = check idOf(created.id);
+    error? response = calendarClient->cancelEvent(eventId, {comment: "Cancelled by the connector test suite"});
+    test:assertTrue(response is ());
+}
+
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testForwardEvent() returns error? {
+    Event created = check calendarClient->createEvent(eventPayload("Connector test: forward event"));
+    string eventId = check idOf(created.id);
+    error? response = calendarClient->forwardEvent(eventId, {
+        comment: "Forwarded by the connector test suite",
+        toRecipients: [{emailAddress: <EmailAddress>{address: attendeeEmail}}]
+    });
+    test:assertTrue(response is ());
+}
+
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testListEventAttachments() returns error? {
+    Event created = check calendarClient->createEvent(eventPayload("Connector test: list attachments"));
+    string eventId = check idOf(created.id);
+    _ = check calendarClient->createEventAttachment(eventId, fileAttachment("agenda.txt"));
+    AttachmentCollection response = check calendarClient->listEventAttachments(eventId);
+    test:assertTrue((response.value ?: []).length() > 0);
+}
+
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testCreateEventAttachment() returns error? {
+    Event created = check calendarClient->createEvent(eventPayload("Connector test: add attachment"));
+    string eventId = check idOf(created.id);
+    Attachment response = check calendarClient->createEventAttachment(eventId, fileAttachment("notes.txt"));
+    test:assertTrue(response?.id !is ());
+    test:assertEquals(response?.name, "notes.txt");
+}
+
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testDeleteEventAttachment() returns error? {
+    Event created = check calendarClient->createEvent(eventPayload("Connector test: delete attachment"));
+    string eventId = check idOf(created.id);
+    Attachment attachment = check calendarClient->createEventAttachment(eventId, fileAttachment("remove-me.txt"));
+    string attachmentId = check idOf(attachment.id);
+    error? response = calendarClient->deleteEventAttachment(eventId, attachmentId);
+    test:assertTrue(response is ());
+}
+
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testListEventInstances() returns error? {
+    Event payload = eventPayload("Connector test: recurring event");
+    payload.recurrence = <PatternedRecurrence>{
+        pattern: <RecurrencePattern>{'type: "daily", interval: 1},
+        range: <RecurrenceRange>{'type: "numbered", startDate: "2026-10-01", numberOfOccurrences: 3}
     };
-
-    Event|error generatedEvent = calendarClient->createEvent(eventMetadata);
-    if (generatedEvent is Event) {
-        test:assertNotEquals(generatedEvent.id, EMPTY_STRING, "Empty Event ID");
-        eventId = generatedEvent.id.toString();
-        log:printInfo("Event created with ID : " + eventId.toString());
-    } else {
-        test:assertFail(msg = generatedEvent.message());
-    }
-    io:println("\n\n");
-
-    log:printInfo("client->testCreateCalendar()");
-    CalendarMetadata calendarMetadata = {
-        name: "Ballerina-Test-Calendar"
-    };
-    Calendar|error response = calendarClient->createCalendar(calendarMetadata);
-    if (response is Calendar) {
-        test:assertNotEquals(response.id.toString(), EMPTY_STRING, "Empty Calender ID.");
-        calendarId = response.id.toString();
-        log:printInfo("Calendar created with ID : " + calendarId);
-    } else {
-        log:printError(response.toString());
-        test:assertFail(msg = response.message());
-    }
-    io:println("\n\n");
+    Event created = check calendarClient->createEvent(payload);
+    string eventId = check idOf(created.id);
+    EventCollection response = check calendarClient->listEventInstances(eventId,
+        startDateTime = "2026-10-01T00:00:00Z", endDateTime = "2026-10-05T00:00:00Z");
+    test:assertTrue((response.value ?: []).length() > 0);
 }
 
-# Tests related to `Event` resource operations
-# Test - Get `Event` by ID
-@test:Config {
-    enable: true,
-    groups: ["events"]
-}
-function testGetEvent() {
-    log:printInfo("client->testGetEvent()");
-    Event|error event = calendarClient->getEvent(eventId);
-    if (event is Event) {
-        test:assertEquals(event.id, eventId, "Invalid Event ID");
-        log:printInfo("Event received with ID : " + event.id.toString());
-    } else {
-        test:assertFail(msg = event.message());
-    }
-    io:println("\n\n");
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testFindMeetingTimes() returns error? {
+    MeetingTimeSuggestionsResult response = check calendarClient->findMeetingTimes({
+        attendees: [{'type: "required", emailAddress: <EmailAddress>{address: attendeeEmail}}],
+        meetingDuration: "PT30M",
+        maxCandidates: 5
+    });
+    test:assertTrue(response?.meetingTimeSuggestions !is ());
 }
 
-# Test - Get `Event` by ID using preference headers like timezone, content type
-@test:Config {
-    enable: true,
-    groups: ["events"]
-}
-function testGetEventWithPreferenceHeaders() {
-    log:printInfo("client->testGetEventWithPreferenceHeaders()");
-    Event|error event = calendarClient->getEvent(eventId, timeZone = TIMEZONE_AD, contentType = CONTENT_TYPE_TEXT);
-    if (event is Event) {
-        test:assertEquals(event.id, eventId, "Invalid Event ID");
-        log:printInfo("Event received with requested timezone : " + event?.'start?.timeZone.toString());
-    } else {
-        test:assertFail(msg = event.message());
-    }
-    io:println("\n\n");
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testGetCalendarSchedule() returns error? {
+    Calendar calendar = check calendarClient->getDefaultCalendar();
+    string calendarId = check idOf(calendar.id);
+    ScheduleInformationCollection response = check calendarClient->getCalendarSchedule(calendarId, {
+        schedules: [attendeeEmail],
+        startTime: <DateTimeTimeZone>{dateTime: "2026-10-01T09:00:00", timeZone: "UTC"},
+        endTime: <DateTimeTimeZone>{dateTime: "2026-10-01T18:00:00", timeZone: "UTC"},
+        availabilityViewInterval: 60
+    });
+    test:assertTrue((response.value ?: []).length() > 0);
 }
 
-# Test - Get `Event` with Query parameters 
-# More details : https://docs.microsoft.com/en-us/graph/query-parameters
-@test:Config {
-    enable: true,
-    groups: ["events"]
-}
-function testGetEventWithQueryParameters() {
-    log:printInfo("client->testGetEventWithPreferenceHeaders()");
-    Event|error event = calendarClient->getEvent(eventId, queryParams = queryParamSelect);
-    if (event is Event) {
-        test:assertEquals(event.id, eventId, "Invalid Event ID");
-        log:printInfo("Event received with ID: " + event.id.toString());
-    } else {
-        test:assertFail(msg = event.message());
-    }
-    io:println("\n\n");
+@test:Config {groups: ["live_tests", "mock_tests"]}
+isolated function testListUserEvents() returns error? {
+    EventCollection response = check calendarClient->listUserEvents(userId, top = 5);
+    test:assertTrue(response.value !is ());
 }
 
-# Test - Get list of `Events`
-# + return - error or null on failure.
-@test:Config {
-    enable: true,
-    groups: ["events"]
-}
-function testListEvents() returns error? {
-    log:printInfo("client->testListEvents()");
-    stream<Event, error?>|error eventStream
-        = calendarClient->listEvents(timeZone = TIMEZONE_AD, contentType = CONTENT_TYPE_TEXT, queryParams = queryParamTop);
-    if (eventStream is stream<Event, error?>) {
-        _ = check eventStream.forEach(isolated function(Event event) {
-            test:assertNotEquals(event.id, EMPTY_STRING, "Empty Event ID");
-            log:printInfo(event.id.toString());
-        });
-    } else {
-        test:assertFail(msg = eventStream.message());
-    }
-    io:println("\n\n");
-}
-
-# Test - Create an `Event` quickly with minimum details needed
-@test:Config {
-    groups: ["events"],
-    enable: false
-}
-function testAddQuickEvent() {
-    log:printInfo("client->testAddQuickEvent()");
-    string subject = "Test-Subject";
-    string body = "Test-Body";
-    Event|error event = calendarClient->addQuickEvent(subject, body);
-    if (event is Event) {
-        test:assertNotEquals(event.id, EMPTY_STRING, "Empty Event ID");
-        eventId = event.id.toString();
-        log:printInfo("Event created with ID : " + eventId);
-    } else {
-        log:printError(event.toString());
-        test:assertFail(msg = event.message());
-    }
-    io:println("\n\n");
-}
-
-# Test - Create an `Event` with multiple locations
-@test:Config {
-    groups: ["events"],
-    enable: true
-}
-function testCreateEventWithMultipleLocations() {
-    log:printInfo("client->testCreateEventWithMultipleLocations()");
-    EventMetadata eventMetadata = {
-        subject: "Plan summer company picnic",
-        body: {
-            contentType: "text",
-            content: "Let's kick-start this event planning!"
-        },
-        'start: {
-            dateTime: "2021-08-30T11:00:00",
-            timeZone: "Pacific Standard Time"
-        },
-        end: {
-            dateTime: "2021-08-30T12:00:00",
-            timeZone: "Pacific Standard Time"
-        },
-        attendees: [
-            {
-                emailAddress: {
-                    address: "DanaS@contoso.onmicrosoft.com",
-                    name: "Dana"
-                },
-                'type: ATTENDEE_TYPE_REQUIRED
-            },
-            {
-                emailAddress: {
-                    address: "AlexW@contoso.onmicrosoft.com",
-                    name: "Alex Wilber"
-                },
-                'type: ATTENDEE_TYPE_OPTIONAL
-            }
-        ],
-        location: {
-            displayName: "Conf Room 3; Fourth Coffee; Home Office",
-            locationType: LOCATION_TYPE_DEFAULT
-        },
-        locations: [
-            {
-                displayName: "Conf Room 3"
-            },
-            {
-                displayName: "Fourth Coffee",
-                address: {
-                    street: "4567 Main St",
-                    city: "Redmond",
-                    state: "WA",
-                    countryOrRegion: "US",
-                    postalCode: "32008"
-                },
-                coordinates: {
-                    latitude: 47.672,
-                    longitude: -102.103
-                }
-            },
-            {
-                displayName: "Home Office"
-            }
-        ],
-        allowNewTimeProposals: true
-    };
-    Event|error generatedEvent = calendarClient->createEvent(eventMetadata);
-    if (generatedEvent is Event) {
-        test:assertNotEquals(generatedEvent.id, EMPTY_STRING, "Empty Event ID");
-        log:printInfo("Event created with ID : " + generatedEvent.id);
-    } else {
-        test:assertFail(msg = generatedEvent.message());
-    }
-    io:println("\n\n");
-}
-
-# Test - Update an `Event` by providing `EventMetadata` body
-@test:Config {
-    enable: true,
-    groups: ["events"]
-}
-function testUpdateEvent() {
-    log:printInfo("client->testUpdateEvent()");
-    EventMetadata eventBody = {
-        subject: "Changed the Subject during Update Event",
-        isAllDay: false, // if this is true, you need to provide `Start` and `End` also.
-        'start: {
-            dateTime: "2015-09-08T00:00:00.000Z",
-            timeZone: TIMEZONE_AD
-        },
-        end: {
-            dateTime: "2015-09-09T00:00:00.000Z",
-            timeZone: TIMEZONE_AD
-        },
-        responseStatus: {
-            response: RESPONSE_ACCEPTED
-        },
-        recurrence: null,
-        importance: IMPORTANCE_HIGH,
-        reminderMinutesBeforeStart: 99,
-        isOnlineMeeting: true,
-        sensitivity: SENSITIVITY_PERSONAL,
-        showAs: SHOW_AS_BUSY,
-        onlineMeetingProvider: ONLINE_MEETING_PROVIDER_TYPE_TEAMS_FOR_BUSINESS,
-        isReminderOn: true,
-        hideAttendees: false,
-        responseRequested: true,
-        categories: ["Red category"]
-    };
-    Event|error response = calendarClient->updateEvent(eventId, eventBody);
-    if (response is Event) {
-        test:assertEquals(response.id, eventId, "Invalid Event ID");
-        log:printInfo("Event updated, Event ID : " + response.id.toString());
-    } else {
-        test:assertFail(msg = response.message());
-    }
-    io:println("\n\n");
-}
-
-# Tests related to `Calendar` resource operations
-#
-# Test - Get a `Calendar` by ID
-@test:Config {
-    enable: true,
-    groups: ["calendars"]
-}
-function testGetCalendar() {
-    log:printInfo("client->testGetCalendar()");
-    Calendar|error response = calendarClient->getCalendar(calendarId);
-    if (response is Calendar) {
-        test:assertEquals(response.id.toString(), calendarId, "Invalid Calender ID.");
-        log:printInfo("Calendar received with ID : " + response.id.toString());
-    } else {
-        log:printError(response.toString());
-        test:assertFail(msg = response.message());
-    }
-    io:println("\n\n");
-}
-
-# Test - Update a `Calendar` with name, color, default properties
-@test:Config {
-    enable: true,
-    groups: ["calendars"]
-}
-function testUpdateCalendar() {
-    log:printInfo("client->testUpdateCalendar()");
-    string newName = "Updated ballerina calendar";
-    CalendarColor newColor = CALENDAR_COLOR_AUTO;
-    boolean makeDefault = false;
-    Calendar|error response = calendarClient->updateCalendar(calendarId, newName, newColor, makeDefault);
-    if (response is Calendar) {
-        test:assertEquals(response.id.toString(), calendarId, "Invalid Calender ID.");
-        log:printInfo("Calendar updated, Calendar ID : " + response.toString());
-    } else {
-        log:printError(response.toString());
-        test:assertFail(msg = response.message());
-    }
-    io:println("\n\n");
-}
-
-# Test - List `Calendars` 
-# + return - error or null on failure. 
-@test:Config {
-    enable: true,
-    groups: ["calendars"]
-}
-function testListCalendars() returns error? {
-    log:printInfo("client->testListCalendars()");
-    stream<Calendar, error?>|error eventStream = calendarClient->listCalendars(queryParams = queryParamTop);
-    if (eventStream is stream<Calendar, error?>) {
-        _ = check eventStream.forEach(isolated function(Calendar calendar) {
-            test:assertNotEquals(calendar.id.toString(), EMPTY_STRING, "Empty Calender ID.");
-            log:printInfo(calendar.id.toString());
-        });
-    } else {
-        test:assertFail(msg = eventStream.message());
-    }
-    io:println("\n\n");
-}
-
-@test:AfterSuite {}
-function afterSuiteDeleteEventandCalendar() {
-    log:printInfo("client->testDeleteCalendar()");
-    error? deleteResponse = calendarClient->deleteCalendar(calendarId);
-    if (deleteResponse is error) {
-        test:assertFail(msg = deleteResponse.message());
-    } else {
-        log:printInfo("Calendar deleted with ID : " + calendarId);
-    }
-    io:println("\n\n");
-
-    log:printInfo("client->testDeleteEvent()");
-    error? deleteEvent = calendarClient->deleteEvent(eventId);
-    if (deleteEvent is error) {
-        test:assertFail(msg = deleteEvent.message());
-    } else {
-        log:printInfo("Event deleted with ID : " + eventId);
-    }
-    io:println("\n\n");
-}
+isolated function fileAttachment(string name) returns FileAttachment => {
+    name,
+    contentType: "text/plain",
+    contentBytes: "SGVsbG8gZnJvbSBCYWxsZXJpbmE="
+};
